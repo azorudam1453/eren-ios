@@ -11,10 +11,6 @@ jobs:
   build:
     runs-on: macos-15
 
-    defaults:
-      run:
-        shell: bash
-
     steps:
       - name: Depoyu indir
         uses: actions/checkout@v4
@@ -24,7 +20,8 @@ jobs:
         with:
           node-version: 22
 
-      - name: Proje klasörünü belirle
+      - name: Proje klasörünü bul
+        shell: bash
         run: |
           if [ -f "EREN-iOS-Projesi/package.json" ]; then
             echo "PROJECT_DIR=EREN-iOS-Projesi" >> "$GITHUB_ENV"
@@ -35,33 +32,32 @@ jobs:
             exit 1
           fi
 
-      - name: Bağımlılıkları yükle
+      - name: Node bağımlılıklarını yükle
         working-directory: ${{ github.workspace }}/${{ env.PROJECT_DIR }}
         run: npm install
 
-      - name: Capacitor iOS eşitle
+      - name: iOS projesini hazırla
         working-directory: ${{ github.workspace }}/${{ env.PROJECT_DIR }}
-        run: npx cap sync ios
+        shell: bash
+        run: |
+          if [ ! -d "ios/App" ]; then
+            npx cap add ios
+          fi
+          npx cap sync ios
 
       - name: CocoaPods bağımlılıklarını yükle
         working-directory: ${{ github.workspace }}/${{ env.PROJECT_DIR }}/ios/App
-        run: |
-          if [ ! -f "Podfile" ]; then
-            echo "HATA: ios/App/Podfile bulunamadı."
-            exit 1
-          fi
-
-          pod install
+        run: pod install
 
       - name: Workspace dosyasını kontrol et
         working-directory: ${{ github.workspace }}/${{ env.PROJECT_DIR }}/ios/App
         run: |
           if [ ! -d "App.xcworkspace" ]; then
-            echo "HATA: App.xcworkspace oluşturulamadı."
+            echo "HATA: App.xcworkspace bulunamadı."
             exit 1
           fi
 
-      - name: iOS uygulamasını derle
+      - name: iPhone uygulamasını derle
         working-directory: ${{ github.workspace }}/${{ env.PROJECT_DIR }}/ios/App
         run: |
           xcodebuild \
@@ -74,23 +70,28 @@ jobs:
 
       - name: IPA dosyasını oluştur
         working-directory: ${{ github.workspace }}/${{ env.PROJECT_DIR }}/ios/App
+        shell: bash
         run: |
           APP_PATH="build/Build/Products/Release-iphoneos/App.app"
 
           if [ ! -d "$APP_PATH" ]; then
-            echo "HATA: Derlenmiş App.app bulunamadı."
+            echo "HATA: App.app oluşturulamadı."
             exit 1
           fi
 
-          rm -rf Payload EREN-unsigned.ipa
-          mkdir Payload
-          cp -R "$APP_PATH" Payload/EREN.app
-          /usr/bin/zip -qr EREN-unsigned.ipa Payload
+          rm -rf "$GITHUB_WORKSPACE/Payload"
+          rm -f "$GITHUB_WORKSPACE/EREN-unsigned.ipa"
 
-      - name: IPA dosyasını yükle
+          mkdir -p "$GITHUB_WORKSPACE/Payload"
+          cp -R "$APP_PATH" "$GITHUB_WORKSPACE/Payload/EREN.app"
+
+          cd "$GITHUB_WORKSPACE"
+          zip -qr EREN-unsigned.ipa Payload
+
+      - name: IPA dosyasını indirilebilir yap
         uses: actions/upload-artifact@v4
         with:
           name: EREN-unsigned-IPA
-          path: ${{ env.PROJECT_DIR }}/ios/App/EREN-unsigned.ipa
+          path: EREN-unsigned.ipa
           if-no-files-found: error
 ```
