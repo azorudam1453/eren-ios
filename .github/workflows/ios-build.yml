@@ -7,9 +7,6 @@ on:
 jobs:
   build:
     runs-on: macos-15
-    defaults:
-      run:
-        working-directory: EREN-iOS-Projesi
 
     steps:
       - name: Projeyi indir
@@ -21,14 +18,17 @@ jobs:
           node-version: 22
 
       - name: Bağımlılıkları yükle
+        working-directory: EREN-iOS-Projesi
         run: npm install
 
       - name: iOS projesini hazırla
+        working-directory: EREN-iOS-Projesi
         run: |
           npx cap add ios
           npx cap sync ios
 
       - name: iOS uygulamasını derle
+        working-directory: EREN-iOS-Projesi
         run: |
           cd ios/App
           xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO
