@@ -1,1551 +1,786 @@
 
-
 <!DOCTYPE html>
-
 <html lang="tr">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
 <meta name="theme-color" content="#102544">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="EREN">
-
 <title>EREN | Kişi Bilgi Sistemi</title>
 
-<link rel="manifest" href="./manifest.webmanifest">
-<link rel="apple-touch-icon" href="./eren-icon.svg">
-
 <style>
-
-:root{--navy:#102544;--blue:#2563eb;--bg:#f3f6fb;--text:#182338;--muted:#718096;--border:#e1e7f0;--white:#fff;--danger:#b42318}
-
-*{box-sizing:border-box}
-
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
-
-button,input,select,textarea{font:inherit}
-
-button{cursor:pointer}
-
-.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;min-height:65px;padding:10px 18px;background:var(--navy);color:white;padding-top:max(10px,env(safe-area-inset-top))}
-
-.brand{font-size:23px;font-weight:800;letter-spacing:2px}
-
-.brand-sub{font-size:11px;color:#cbd7e8;margin-top:2px}
-
-.icon-button{width:44px;height:44px;flex-shrink:0;border:0;border-radius:10px;background:#ffffff17;color:white;font-size:25px}
-
-.sidebar{position:fixed;z-index:40;top:0;bottom:0;left:0;width:285px;max-width:85vw;background:var(--navy);color:white;padding:22px 14px;transform:translateX(-105%);transition:transform .22s ease;overflow-y:auto;padding-top:max(22px,env(safe-area-inset-top))}
-
-.sidebar.open{transform:translateX(0)}
-
-.side-head{display:flex;justify-content:space-between;align-items:center;padding:0 8px 20px;border-bottom:1px solid #ffffff20;margin-bottom:16px}
-
-.side-head strong{font-size:23px;letter-spacing:2px}
-
-.close-menu{background:none;color:white;border:0;font-size:28px;padding:5px 10px}
-
-.nav-button{display:flex;align-items:center;gap:13px;width:100%;text-align:left;border:0;border-radius:10px;background:transparent;color:#d8e3f4;padding:15px 13px;margin:4px 0;font-size:15px}
-
-.nav-button .nav-icon{width:25px;text-align:center;font-size:20px}
-
-.nav-button.active,.nav-button:hover{background:#ffffff18;color:white}
-
-.overlay{position:fixed;inset:0;background:#07142680;z-index:30;display:none}
-
-.overlay.show{display:block}
-
-main{max-width:1100px;margin:0 auto;padding:24px 20px 60px}
-
-.page{display:none}.page.active{display:block}
-
-.page-heading{margin-bottom:20px}
-
-.page-heading h1{font-size:27px;margin:0 0 7px}
-
-.page-heading p{color:var(--muted);margin:0;line-height:1.5}
-
-.panel{background:white;border:1px solid var(--border);border-radius:15px;padding:21px;margin-bottom:18px;box-shadow:0 3px 12px #172b4d08}
-
-.panel h2{font-size:18px;margin:0 0 16px}
-
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
-
-label{display:block;font-size:13px;font-weight:650}
-
-input,select,textarea{width:100%;margin-top:7px;padding:12px;border:1px solid #ccd5e2;border-radius:9px;background:white;color:var(--text);min-height:45px;font-size:16px}
-
-textarea{min-height:110px;resize:vertical;line-height:1.5}
-
-input:focus,select:focus,textarea:focus{outline:2px solid #93b4ff;outline-offset:1px;border-color:var(--blue)}
-
-.full{grid-column:1/-1}
-
-.actions{display:flex;gap:9px;flex-wrap:wrap}
-
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:0;border-radius:9px;padding:12px 16px;min-height:44px;font-weight:650}
-
-.btn-primary{background:var(--blue);color:white}
-
-.btn-light{background:#edf2f8;color:#26364e}
-
-.btn-danger{background:#fff0ef;color:var(--danger)}
-
-.btn-small{padding:8px 10px;min-height:36px;font-size:13px}
-
-.hint{font-size:12px;color:var(--muted);line-height:1.6}
-
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
-
-.stat{background:white;border:1px solid var(--border);border-radius:13px;padding:16px}
-
-.stat-number{font-size:25px;font-weight:800;color:var(--navy)}
-
-.stat-label{font-size:12px;color:var(--muted);margin-top:5px}
-
-.search-row{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;margin-bottom:14px}
-
-.search-row input,.search-row select{margin-top:0}
-
-.table-wrap{overflow-x:auto}
-
-table{width:100%;border-collapse:collapse;min-width:740px}
-
-th,td{text-align:left;padding:12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:13px}
-
-th{background:#f8fafc;color:#53627a;font-weight:700}
-
-td strong{font-size:14px}
-
-.muted{color:var(--muted);font-size:12px;margin-top:5px;line-height:1.5;overflow-wrap:anywhere}
-
-.empty{padding:24px 10px;text-align:center;color:var(--muted);line-height:1.6}
-
-.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#eaf1ff;color:#1d4ed8;font-size:11px;font-weight:700}
-
-.item-list{display:grid;gap:12px}
-
-.item-card{border:1px solid var(--border);border-radius:12px;padding:15px;background:#fff}
-
-.item-card h3{margin:0 0 7px;font-size:16px;overflow-wrap:anywhere}
-
-.item-card p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;margin:10px 0}
-
-.item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-
-.item-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
-
-.category-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 0;border-bottom:1px solid var(--border)}
-
-.category-row:last-child{border-bottom:0}
-
-.hidden{display:none!important}
-
-.person-photo{width:82px;height:82px;border-radius:50%;object-fit:cover;background:#eaf0f8;border:1px solid var(--border);flex-shrink:0}
-
-.person-photo-placeholder{display:flex;align-items:center;justify-content:center;font-size:30px;color:#5b6b82}
-
-.profile-head{display:flex;align-items:center;gap:17px;margin-bottom:20px}
-
-.profile-name{font-size:24px;font-weight:800;margin-bottom:5px;overflow-wrap:anywhere}
-
-.profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-
-.profile-field{padding:12px;border:1px solid var(--border);border-radius:10px;min-width:0}
-
-.profile-label{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
-
-.profile-value{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5}
-
-.profile-field.full{grid-column:1/-1}
-
-.profile-link{color:#1d4ed8;text-decoration:none}
-
-.profile-link:hover{text-decoration:underline}
-.private-note-box{margin-top:20px;padding:16px;border:1px solid var(--border);border-radius:12px;background:#f8faff}
-.private-note-box h2{margin:0 0 8px;font-size:17px}
-.private-note-box textarea{min-height:120px}
-
-.click-name{border:0;background:none;padding:0;color:#1d4ed8;font-weight:750;text-align:left}
-
-.click-name:hover{text-decoration:underline}
-
-body.dark-mode{--bg:#101827;--text:#e6edf7;--muted:#a3b2c7;--border:#334155;--white:#182338;background:var(--bg);color:var(--text)}
-body.dark-mode .panel,body.dark-mode .stat,body.dark-mode .item-card{background:#182338;border-color:var(--border);color:var(--text)}
-body.dark-mode input,body.dark-mode select,body.dark-mode textarea{background:#111c2d;color:var(--text);border-color:#43516a}
-body.dark-mode th{background:#202d42;color:#d5dfed}
-body.dark-mode .btn-light{background:#2b3a51;color:#e6edf7}
-body.dark-mode .btn-danger{background:#492b32;color:#ffd9d5}
-body.dark-mode .private-note-box{background:#17263e}
-body.dark-mode .badge{background:#253c67;color:#d6e4ff}
-body.dark-mode .profile-link,body.dark-mode .click-name{color:#93baff}
-footer{text-align:center;color:var(--muted);font-size:11px;padding:15px 0 25px}
-
-@media(max-width:650px){
-
- main{padding:17px 12px 40px}.topbar{padding-left:12px;padding-right:12px}
-
- .page-heading h1{font-size:24px}.panel{padding:16px;border-radius:13px}
-
- .grid,.profile-grid{grid-template-columns:1fr}.full,.profile-field.full{grid-column:auto}
-
- .search-row{grid-template-columns:1fr}.stats{gap:8px}.stat{padding:12px 10px}
-
- .stat-number{font-size:22px}.stat-label{font-size:11px}.btn{padding:12px}
-
- .profile-head{align-items:flex-start}.profile-name{font-size:21px}
-
+:root {
+  --bg:#f3f6fb; --card:#fff; --text:#17243a; --muted:#75839a;
+  --primary:#173b69; --accent:#3478f6; --border:#e3eaf3;
+  --soft:#edf3fb; --danger:#d94848; --shadow:0 8px 28px #142d4d0d;
 }
-
+body.dark {
+  --bg:#0d1625; --card:#162337; --text:#eef4ff; --muted:#a1afc4;
+  --primary:#8ab8ff; --accent:#6ba0ff; --border:#293950;
+  --soft:#203149; --danger:#ff7777; --shadow:0 8px 28px #0002;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  transition:background .2s,color .2s;
+}
+button,input,select,textarea {font:inherit}
+button {cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible {
+  outline:3px solid #79aaff;outline-offset:2px;
+}
+.app {max-width:1100px;margin:auto;padding:18px 18px 105px}
+header {
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:8px 0 20px;
+}
+.brand {display:flex;align-items:center;gap:12px}
+.logo {
+  width:48px;height:48px;border-radius:15px;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(145deg,#234e83,#102544);
+  font-size:28px;font-weight:900;box-shadow:0 7px 18px #173b6930;
+}
+.brand h1 {margin:0;font-size:23px;letter-spacing:2px}
+.brand p {margin:3px 0 0;font-size:11px;letter-spacing:1.2px;color:var(--muted)}
+.icon-btn {
+  border:1px solid var(--border);background:var(--card);color:var(--text);
+  width:43px;height:43px;border-radius:14px;font-size:19px;
+}
+.hero {
+  position:relative;overflow:hidden;border-radius:26px;padding:27px;
+  color:#fff;background:linear-gradient(120deg,#102544,#1b4679 70%,#2864a1);
+  box-shadow:0 15px 35px #153c6624;
+}
+.hero:after {
+  content:"E";position:absolute;right:15px;top:-52px;font-size:240px;
+  font-weight:900;color:#ffffff0b;pointer-events:none;
+}
+.hero .eyebrow {font-size:11px;letter-spacing:2px;color:#bcd5f5}
+.hero h2 {font-size:27px;margin:12px 0 8px;position:relative;z-index:1}
+.hero p {font-size:14px;line-height:1.6;color:#d4e2f5;max-width:520px;margin:0;position:relative;z-index:1}
+.search-wrap {margin:19px 0}
+.search {
+  display:flex;align-items:center;gap:10px;background:var(--card);
+  border:1px solid var(--border);border-radius:17px;padding:0 15px;
+  box-shadow:var(--shadow);
+}
+.search input {width:100%;border:0;outline:0;background:transparent;color:var(--text);padding:16px 0}
+.stats {display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stat {
+  background:var(--card);border:1px solid var(--border);border-radius:19px;
+  padding:17px 14px;box-shadow:var(--shadow);
+}
+.stat .num {font-size:27px;font-weight:800;margin-top:8px}
+.stat .label {font-size:12px;color:var(--muted)}
+.stat .symbol {font-size:20px}
+.section-head {display:flex;align-items:center;justify-content:space-between;gap:10px;margin:24px 0 13px}
+.section-head h3 {margin:0;font-size:18px}
+.section-head small {color:var(--muted)}
+.grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.action-card {
+  text-align:left;border:1px solid var(--border);background:var(--card);
+  color:var(--text);border-radius:20px;padding:18px;min-height:125px;
+  box-shadow:var(--shadow);transition:transform .15s;
+}
+.action-card:active {transform:scale(.98)}
+.action-icon {
+  width:42px;height:42px;border-radius:14px;background:var(--soft);
+  display:grid;place-items:center;font-size:22px;margin-bottom:13px;
+}
+.action-card strong {display:block;font-size:15px}
+.action-card span {display:block;color:var(--muted);font-size:12px;margin-top:5px}
+.panel {
+  background:var(--card);border:1px solid var(--border);border-radius:22px;
+  padding:18px;box-shadow:var(--shadow);margin-top:16px;
+}
+.panel h3 {margin:0 0 16px}
+.row {display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn {
+  border:0;border-radius:12px;padding:12px 15px;font-weight:650;
+  background:var(--primary);color:#fff;
+}
+.btn.secondary {background:var(--soft);color:var(--text);border:1px solid var(--border)}
+.btn.danger {background:var(--danger);color:#fff}
+.btn.small {padding:8px 10px;font-size:12px}
+.btn:disabled {opacity:.5;cursor:not-allowed}
+.field {margin-bottom:13px}
+.field label {display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.field input,.field textarea,.field select {
+  width:100%;border:1px solid var(--border);border-radius:12px;padding:12px;
+  color:var(--text);background:var(--bg);min-width:0;
+}
+.field textarea {min-height:85px;resize:vertical}
+.form-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 12px}
+.span-2 {grid-column:1/-1}
+.list {display:grid;gap:10px}
+.item {
+  border:1px solid var(--border);border-radius:16px;padding:14px;
+  display:flex;justify-content:space-between;gap:12px;align-items:flex-start;
+}
+.item-main {min-width:0;flex:1}
+.item h4 {margin:0 0 5px;font-size:15px;overflow-wrap:anywhere}
+.item p {margin:4px 0;font-size:12px;color:var(--muted);overflow-wrap:anywhere;white-space:pre-wrap}
+.item-actions {display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pill {display:inline-block;background:var(--soft);padding:5px 8px;border-radius:8px;font-size:11px;margin:3px 3px 0 0}
+.empty {text-align:center;padding:25px;color:var(--muted);font-size:13px}
+.bottom-nav {
+  position:fixed;bottom:0;left:0;right:0;z-index:10;
+  padding:9px 10px calc(9px + env(safe-area-inset-bottom));
+  background:var(--card);border-top:1px solid var(--border);
+  display:flex;justify-content:center;gap:5px;
+}
+.nav-btn {
+  flex:1;max-width:180px;border:0;background:transparent;color:var(--muted);
+  padding:8px 4px;border-radius:12px;font-size:11px;
+}
+.nav-btn .nav-icon {display:block;font-size:20px;margin-bottom:3px}
+.nav-btn.active {background:var(--soft);color:var(--accent);font-weight:800}
+.view {display:none}
+.view.active {display:block}
+.toast {
+  position:fixed;left:50%;bottom:95px;transform:translateX(-50%);
+  z-index:50;background:#172b45;color:#fff;padding:12px 17px;border-radius:12px;
+  box-shadow:0 8px 25px #0003;font-size:13px;max-width:90%;text-align:center;
+}
+.modal-backdrop {
+  display:none;position:fixed;inset:0;z-index:30;background:#07132499;
+  padding:18px;align-items:center;justify-content:center;
+}
+.modal-backdrop.open {display:flex}
+.modal {
+  width:min(600px,100%);max-height:90dvh;overflow:auto;background:var(--card);
+  color:var(--text);border-radius:22px;padding:21px;box-shadow:0 20px 70px #0004;
+}
+.modal-head {display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}
+.modal-head h3 {margin:0}
+.file-label {display:inline-flex;align-items:center;justify-content:center;gap:7px}
+.help {font-size:12px;line-height:1.6;color:var(--muted)}
+hr {border:0;border-top:1px solid var(--border);margin:17px 0}
+.footer {text-align:center;color:var(--muted);font-size:11px;padding:28px 0 0;line-height:1.8}
+#splash {
+  position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;
+  text-align:center;color:#fff;background:radial-gradient(circle at 50% 35%,#1e4778,#102544 58%,#09172b);
+  transition:opacity .5s,visibility .5s;
+}
+#splash.hide {opacity:0;visibility:hidden;pointer-events:none}
+.splash-inner {padding:30px}
+.splash-logo {
+  width:100px;height:100px;border:1px solid #ffffff55;border-radius:30px;
+  display:grid;place-items:center;font-size:62px;font-weight:900;margin:0 auto 25px;
+  background:linear-gradient(145deg,#ffffff26,#ffffff08);box-shadow:0 15px 50px #0003;
+}
+#splash h1 {font-size:35px;letter-spacing:7px;margin:0 0 9px}
+#splash p {font-size:11px;letter-spacing:3px;color:#bfd2ed;margin:0}
+.loading-track {width:165px;height:3px;background:#ffffff30;margin:35px auto 17px;border-radius:10px;overflow:hidden}
+.loading-bar {height:100%;width:0;background:#fff;animation:load 1.3s ease forwards}
+@keyframes load {to{width:100%}}
+.splash-credit {font-size:10px;letter-spacing:1.2px;color:#a9bfdc}
+@media(min-width:760px) {
+  .app {padding-top:26px}
+  .grid {grid-template-columns:repeat(4,minmax(0,1fr))}
+  .hero {padding:36px}
+}
+@media(max-width:480px) {
+  .app {padding:12px 13px 100px}
+  .hero {padding:22px}
+  .hero h2 {font-size:23px}
+  .stats {gap:8px}
+  .stat {padding:13px 10px}
+  .stat .num {font-size:23px}
+  .stat .label {font-size:10px}
+  .grid {gap:10px}
+  .action-card {padding:14px;min-height:122px}
+  .form-grid {grid-template-columns:1fr}
+  .span-2 {grid-column:auto}
+  .item {flex-direction:column}
+  .item-actions {justify-content:flex-start}
+}
 </style>
-
 </head>
 
 <body>
-
-<header class="topbar">
-
-  <button class="icon-button" id="menuOpen" aria-label="Menüyü aç" aria-expanded="false">☰</button>
-
-  <div style="flex:1"><div class="brand">EREN</div><div class="brand-sub">Kişi Bilgi Sistemi</div></div>
-  <button class="icon-button" id="themeToggle" aria-label="Açık/koyu tema" title="Açık/koyu tema">☾</button>
-
-</header>
-
-<div class="overlay" id="overlay"></div>
-
-<aside class="sidebar" id="sidebar" aria-label="Ana menü">
-
-  <div class="side-head"><strong>EREN</strong><button class="close-menu" id="menuClose" aria-label="Menüyü kapat">×</button></div>
-
-  <button class="nav-button active" data-page="home"><span class="nav-icon">⌂</span>Ana Sayfa</button>
-
-  <button class="nav-button" data-page="add"><span class="nav-icon">＋</span>Kişi Ekle</button>
-
-  <button class="nav-button" data-page="people"><span class="nav-icon">♙</span>Kişiler</button>
-
-  <button class="nav-button" data-page="notes"><span class="nav-icon">▤</span>Notlarım</button>
-
-  <button class="nav-button" data-page="categories"><span class="nav-icon">▦</span>Not Kategorileri</button>
-
-  <button class="nav-button" data-page="transfer"><span class="nav-icon">⇅</span>Excel / Rehber Aktarımı</button>
-
-</aside>
-
-
-
-<main>
-
-<section class="page active" id="page-home">
-
-  <div class="page-heading"><h1>Ana Sayfa</h1><p>Merhaba! EREN kişi bilgi sistemine hoş geldin.</p></div>
-
-  <div class="stats">
-
-    <div class="stat"><div class="stat-number" id="statPeople">0</div><div class="stat-label">Kayıtlı Kişi</div></div>
-
-    <div class="stat"><div class="stat-number" id="statCategories">0</div><div class="stat-label">Not Kategorisi</div></div>
-
-    <div class="stat"><div class="stat-number" id="statNotes">0</div><div class="stat-label">Kayıtlı Not</div></div>
-
-  </div>
-
-  <div class="panel"><h2>Hızlı İşlemler</h2><div class="actions">
-
-    <button class="btn btn-primary" data-go="add">＋ Kişi Ekle</button>
-
-    <button class="btn btn-light" data-go="people">♙ Kişileri Aç</button>
-
-    <button class="btn btn-light" data-go="notes">▤ Notlarımı Aç</button>
-    <button class="btn btn-light" data-go="smart">⌕ Akıllı Ara</button>
-    <button class="btn btn-light" data-go="tasks">☑ İş Kaydet</button>
-
-    <button class="btn btn-light" data-go="transfer">⇅ Rehber Aktar</button>
-
-  </div></div>
-
-  <div class="panel"><h2>Son Eklenen Kişiler</h2><div id="recentPeople" class="item-list"></div></div>
-
-</section>
-
-
-
-<section class="page" id="page-add">
-
-  <div class="page-heading"><h1 id="personFormTitle">Kişi Ekle</h1><p>Çalışan bilgilerini girerek rehberine kaydet.</p></div>
-
-  <div class="panel">
-    <h2>📱 iPhone Rehberinden Kişi Aktar</h2>
-    <p>iPhone Kişiler uygulamasında kişiyi açıp <strong>Kişiyi Paylaş</strong> seçeneğiyle vCard (.vcf) dosyası oluştur. Ardından aşağıdan dosyayı seç. Tek kişi seçersen adı ve telefon numarası forma otomatik doldurulur; birden fazla kişi varsa toplu ekleyebilirsin.</p>
-    <label>iPhone kişi kartı (.vcf) seç
-      <input type="file" id="vcardFile" accept=".vcf,text/vcard,text/x-vcard" multiple>
-    </label>
-    <p class="hint">iPhone'da: Kişiler → kişiyi aç → Kişiyi Paylaş → Dosyalara Kaydet. Sonra bu sayfaya dönüp kaydettiğin .vcf dosyasını seç. EREN rehberinin tamamına kendiliğinden erişmez; yalnızca seçtiğin kişi kartlarını okur.</p>
+<div id="splash">
+  <div class="splash-inner">
+    <div class="splash-logo">E</div>
+    <h1>EREN</h1>
+    <p>KİŞİ BİLGİ SİSTEMİ</p>
+    <div class="loading-track"><div class="loading-bar"></div></div>
+    <div class="splash-credit">EREN · GÜVENLİ · DÜZENLİ · HIZLI</div>
+    <div class="splash-credit" style="margin-top:24px">EYYÜPHAN TURHAN MUHABERE</div>
   </div>
-  <div class="panel">
-    <form id="personForm" class="grid">
-
-      <input type="hidden" name="id">
-
-      <label>Ad Soyad *
-
-        <input name="name" required autocomplete="name" placeholder="Adı ve soyadı">
-
-      </label>
-
-      <label>Kurum / Birim
-
-        <input name="unit" list="unitOptions" placeholder="Örn. İnsan Kaynakları"><datalist id="unitOptions"></datalist>
-
-      </label>
-
-      <label>Görev / Unvan
-
-        <input name="job" placeholder="Görevi veya unvanı">
-
-      </label>
-
-      <label>Çalıştığı Yer
-
-        <input name="workplace" placeholder="Bina veya çalışma yeri">
-
-      </label>
-
-      <label>Oda / Kat
-
-        <input name="roomFloor" placeholder="Örn. 2. kat, 204 numaralı oda">
-
-      </label>
-
-      <label>Dahili Telefon
-
-        <input name="extension" inputmode="tel" placeholder="Dahili numara">
-
-      </label>
-
-      <label>Telefon Numarası
-
-        <input name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Telefon numarası">
-
-      </label>
-
-      <label>Kurumsal E-posta
-
-        <input name="email" type="email" autocomplete="email" placeholder="E-posta adresi">
-
-      </label>
-
-      <label>Kategori
-
-        <select name="category" id="personCategory">
-
-          <option>Personel</option><option>Yönetici</option><option>Teknik</option><option>İdari</option><option>Diğer</option>
-
-        </select>
-
-      </label>
-
-      <label>Uzmanlık Alanları
-
-        <input name="expertise" placeholder="Örn. satın alma, yazılım, evrak">
-
-      </label>
-
-      <label>Sorumlu Olduğu İşler
-
-        <input name="responsibilities" placeholder="Sorumlu olduğu işler">
-
-      </label>
-
-      <label class="full">Görev Açıklaması
-
-        <textarea name="notes" placeholder="Kişinin yaptığı işler, sorumlulukları ve görev detayları"></textarea>
-
-      </label>
-
-      <label class="full">Ek Açıklamalar
-
-        <textarea name="additionalInfo" placeholder="Kişiyle ilgili kurumsal ek bilgiler"></textarea>
-
-      </label>
-
-      <label class="full">Profil Fotoğrafı
-
-        <input type="file" id="personPhoto" accept="image/*">
-
-      </label>
-
-      <div class="full" id="photoPreviewWrap" style="display:none">
-
-        <img id="photoPreview" alt="Kişi fotoğrafı önizlemesi" class="person-photo">
-
-        <button type="button" id="removePhoto" class="btn btn-light btn-small">Fotoğrafı kaldır</button>
-
-      </div>
-
-      <p class="full hint">İpucu: Fotoğraf bu tarayıcıda saklanır. Çok büyük fotoğraflar depolama alanını doldurabilir; küçük fotoğraflar kullan.</p>
-
-      <div class="full actions">
-
-        <button class="btn btn-primary" type="submit" id="personSave">Kişiyi Kaydet</button>
-
-        <button class="btn btn-light hidden" type="button" id="personCancel">Vazgeç</button>
-
-      </div>
-
-    </form>
-
-  </div>
-
-</section>
-
-
-
-<section class="page" id="page-people">
-
-  <div class="page-heading"><h1>Kişiler</h1><p>Bir kişiye tıklayarak detaylı kartını açabilirsin.</p></div>
-
-  <div class="panel">
-
-    <div class="search-row">
-
-      <input id="peopleSearch" placeholder="İsim, telefon, birim, uzmanlık, görev ara...">
-
-      <select id="peopleFilter" aria-label="Kategoriye göre filtrele"><option value="">Tüm kategoriler</option><option>Personel</option><option>Yönetici</option><option>Teknik</option><option>İdari</option><option>Diğer</option></select>
-
-    </div>
-
-    <div class="actions" style="margin-bottom:14px">
-
-      <button class="btn btn-primary" data-go="add">＋ Kişi Ekle</button>
-
-      <button class="btn btn-light" id="peopleExport">Kişi Listesini İndir (CSV)</button>
-
-    </div>
-
-    <div id="peopleCount" class="hint"></div>
-
-    <div class="table-wrap"><table>
-
-      <thead><tr><th>Ad Soyad</th><th>Birim / Görev</th><th>Telefon</th><th>Kategori / Yer</th><th>İşlemler</th></tr></thead>
-
-      <tbody id="peopleList"></tbody>
-
-    </table></div>
-
-    <div id="peopleEmpty" class="empty hidden">Aramana uygun kişi bulunamadı.</div>
-
-  </div>
-
-</section>
-
-
-
-<section class="page" id="page-profile">
-
-  <div class="page-heading"><h1>Kişi Kartı</h1><p>Kişinin iletişim bilgileri, görevleri ve uzmanlık alanları.</p></div>
-
-  <div class="panel">
-
-    <div class="profile-head">
-
-      <img id="profilePhoto" class="person-photo hidden" alt="Kişi fotoğrafı">
-
-      <div id="profilePlaceholder" class="person-photo person-photo-placeholder">♙</div>
-
-      <div><div class="profile-name" id="profileName"></div><div id="profileJob" class="muted"></div><div id="profileCategory" style="margin-top:8px"></div></div>
-
-    </div>
-
-    <div id="profileFields" class="profile-grid"></div>
-<div class="private-note-box">
-<h2>🔒 Bana Özel Kişi Notu</h2>
-<p class="hint">Bu alandaki not, bu tarayıcıda ayrı saklanır. Şu an kullanıcı hesabı veya parola koruması yoktur.</p>
-<label for="profilePrivateNote">Kişiyle ilgili kişisel hatırlatmalarım</label>
-<textarea id="profilePrivateNote" placeholder="Bu kişiyle ilgili kendi hatırlatmalarını buraya yaz..."></textarea>
-<div class="actions" style="margin-top:10px">
-<button class="btn btn-primary" type="button" id="saveProfilePrivateNote">Özel Notu Kaydet</button>
-<button class="btn btn-light" type="button" id="clearProfilePrivateNote">Not Alanını Temizle</button>
-</div>
 </div>
 
-    <div class="actions" style="margin-top:18px">
-
-      <button class="btn btn-primary" id="profileEdit">Kişiyi Düzenle</button>
-
-      <button class="btn btn-light" id="profileBack">Kişi Listesine Dön</button>
-
-    </div>
-
-  </div>
-
-</section>
-
-
-
-<section class="page" id="page-transfer">
-
-  <div class="page-heading"><h1>Excel / Rehber Aktarımı</h1><p>Toplu kayıt ekle veya rehberinin bir kopyasını indir.</p></div>
-
-  <div class="panel">
-
-    <h2>Dosyadan Kişi Aktar</h2>
-
-    <p>Excel dosyanı CSV UTF-8 biçiminde kaydet. İlk satır sütun başlıkları olmalı.</p>
-
-    <label>CSV dosyasını seç<input type="file" id="csvFile" accept=".csv,text/csv"></label>
-
-    <p class="hint">Başlıklar: Ad Soyad, Birim, Görev, Çalışma Yeri, Oda / Kat, Dahili, Telefon, E-posta, Kategori, Uzmanlık Alanları, Sorumlu Olduğu İşler, Görev Açıklaması, Ek Açıklamalar. Fotoğraflar CSV ile aktarılmaz.</p>
-
-    <button class="btn btn-primary" id="importButton" type="button">Dosyayı Aktar</button>
-
-  </div>
-
-  <div class="panel"><h2>Rehberi Dışa Aktar</h2><p>Kaydedilmiş kişilerini Excel ile açabileceğin CSV dosyası olarak indir.</p><button class="btn btn-primary" id="exportButton" type="button">Rehberi İndir (CSV)</button></div>
-
-  <div class="panel">
-    <h2>Tam Yedekleme ve Geri Yükleme</h2>
-    <p>Kişiler, notlar, kategoriler ve özel kişi notlarını tek bir dosyada yedekle. Bu dosyayı güvenli bir yerde sakla.</p>
-    <div class="actions"><button class="btn btn-primary" id="backupButton" type="button">Tam Yedek İndir (JSON)</button></div>
-    <div style="margin-top:16px">
-      <label>EREN yedek dosyasını seç (.json)<input type="file" id="restoreFile" accept=".json,application/json"></label>
-      <p class="hint">Geri yükleme, mevcut kayıtların üzerine yazar. Önce mevcut verilerini yedekle.</p>
-      <button class="btn btn-light" id="restoreButton" type="button">Yedeği Geri Yükle</button>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="logo">E</div>
+      <div><h1>EREN</h1><p>KİŞİ BİLGİ SİSTEMİ</p></div>
     </div>
+    <button class="icon-btn" id="themeBtn" aria-label="Temayı değiştir" title="Açık/koyu tema">☾</button>
+  </header>
+
+  <main>
+    <section id="homeView" class="view active">
+      <div class="hero">
+        <div class="eyebrow">KİŞİSEL BİLGİ MERKEZİ</div>
+        <h2>Bilgiler elinin altında.</h2>
+        <p>Kişileri, birimleri, görevleri ve notlarını tek bir yerde düzenle. Aradığın bilgiye hızlıca ulaş.</p>
+      </div>
+
+      <div class="search-wrap">
+        <div class="search"><span>⌕</span><input id="globalSearch" type="search" placeholder="Kişi, birim, telefon veya not ara..." autocomplete="off"></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="symbol">👥</div><div class="num" id="peopleCount">0</div><div class="label">Kişi</div></div>
+        <div class="stat"><div class="symbol">🏢</div><div class="num" id="unitCount">0</div><div class="label">Birim</div></div>
+        <div class="stat"><div class="symbol">✓</div><div class="num" id="taskCount">0</div><div class="label">Açık iş</div></div>
+      </div>
+
+      <div class="section-head"><h3>Hızlı erişim</h3><small>İşlemler</small></div>
+      <div class="grid">
+        <button class="action-card" data-go="people"><div class="action-icon">👤</div><strong>Kişiler</strong><span>Kişi ekle ve rehberi düzenle</span></button>
+        <button class="action-card" data-go="units"><div class="action-icon">🏢</div><strong>Birimler</strong><span>Çalışma birimlerini yönet</span></button>
+        <button class="action-card" data-go="tasks"><div class="action-icon">📋</div><strong>İşler</strong><span>Görevlerini takip et</span></button>
+        <button class="action-card" data-go="notes"><div class="action-icon">📝</div><strong>Notlar</strong><span>Kişisel notlarını kaydet</span></button>
+      </div>
+
+      <div class="panel">
+        <div class="section-head" style="margin-top:0"><h3>Veri aktarımı</h3></div>
+        <p class="help">Kişileri Excel uyumlu CSV dosyasından aktarabilir, Excel'de açılabilen bir dosya olarak dışa aktarabilir veya telefon rehberi için vCard (.vcf) dosyası kullanabilirsin.</p>
+        <div class="row">
+          <button class="btn" id="openImport">⬆ Kişi içe aktar</button>
+          <button class="btn secondary" id="exportCsv">⬇ Excel / CSV</button>
+          <button class="btn secondary" id="exportVcf">▣ Rehbere aktar</button>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Yedekleme ve geri yükleme</h3>
+        <p class="help">Kişilerini, birimlerini, görevlerini ve notlarını JSON dosyasına yedekle. Dosyayı güvenli bir yerde sakla.</p>
+        <div class="row">
+          <button class="btn" id="backupBtn">Yedek oluştur</button>
+          <label class="btn secondary file-label">Yedek yükle<input type="file" id="restoreFile" accept=".json,application/json" hidden></label>
+        </div>
+      </div>
+    </section>
+
+    <section id="peopleView" class="view">
+      <div class="section-head"><h3>Kişiler</h3><button class="btn" id="addPersonBtn">＋ Kişi ekle</button></div>
+      <div class="panel">
+        <div class="field"><label>Kişilerde ara</label><input id="peopleSearch" placeholder="İsim, soyisim, telefon, birim..." type="search"></div>
+        <div class="row">
+          <button class="btn secondary" id="peopleImportBtn">Excel/CSV veya VCF içe aktar</button>
+          <button class="btn secondary" id="peopleExportBtn">CSV dışa aktar</button>
+        </div>
+        <p class="help">iPhone rehberinden otomatik seçim bu HTML dosyasında tek başına kullanılamaz. Rehberden bir kişiyi .vcf dosyası olarak paylaşıp burada içe aktarabilirsin.</p>
+      </div>
+      <div id="peopleList" class="list" style="margin-top:14px"></div>
+    </section>
+
+    <section id="unitsView" class="view">
+      <div class="section-head"><h3>Birimler</h3><button class="btn" id="addUnitBtn">＋ Birim ekle</button></div>
+      <div id="unitsList" class="list"></div>
+    </section>
+
+    <section id="tasksView" class="view">
+      <div class="section-head"><h3>İşler ve görevler</h3><button class="btn" id="addTaskBtn">＋ İş ekle</button></div>
+      <div id="tasksList" class="list"></div>
+    </section>
+
+    <section id="notesView" class="view">
+      <div class="section-head"><h3>Notlar</h3><button class="btn" id="addNoteBtn">＋ Not ekle</button></div>
+      <div id="notesList" class="list"></div>
+    </section>
+
+    <section id="settingsView" class="view">
+      <div class="section-head"><h3>Ayarlar</h3></div>
+      <div class="panel">
+        <h3>Veri güvenliği</h3>
+        <p class="help">Kayıtların bu tarayıcıda/uygulama alanında saklanır. Sunucuya otomatik gönderilmez. Uygulamayı veya tarayıcı verilerini silmek kayıtların kaybolmasına neden olabilir. Düzenli yedek al.</p>
+        <div class="row"><button class="btn" id="settingsBackup">Yedek oluştur</button><button class="btn secondary" id="settingsExport">Kişileri CSV indir</button></div>
+        <hr>
+        <h3>Veri sıfırlama</h3>
+        <p class="help">Bu işlem cihazdaki EREN kayıtlarını siler. Önce yedek almanı öneririz.</p>
+        <button class="btn danger" id="clearDataBtn">Tüm EREN verilerini sil</button>
+      </div>
+      <div class="footer">EREN KİŞİ BİLGİ SİSTEMİ<br>Güvenli · Düzenli · Hızlı<br>EYYÜPHAN TURHAN MUHABERE</div>
+    </section>
+  </main>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-go="home"><span class="nav-icon">⌂</span>Ana sayfa</button>
+  <button class="nav-btn" data-go="people"><span class="nav-icon">👥</span>Kişiler</button>
+  <button class="nav-btn" data-go="tasks"><span class="nav-icon">☑</span>İşler</button>
+  <button class="nav-btn" data-go="notes"><span class="nav-icon">▤</span>Notlar</button>
+  <button class="nav-btn" data-go="settings"><span class="nav-icon">⚙</span>Ayarlar</button>
+</nav>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head"><h3 id="modalTitle">Kayıt</h3><button class="icon-btn" id="closeModal" aria-label="Kapat">×</button></div>
+    <div id="modalContent"></div>
   </div>
-  <div class="panel"><h2>Veri Saklama Hakkında</h2><p class="hint">Kayıtlar şu anda bu tarayıcının yerel depolamasında saklanır. Tarayıcı verilerini silmek kayıtları silebilir. Önemli verileri düzenli olarak dışa aktar. Bu sürüm çevrim içi senkronizasyon yapmaz. Aynı kayıtları çalışma arkadaşlarınla paylaşmak için sonraki aşamada ortak veri kaynağı ve kullanıcı girişi kurulmalıdır.</p></div>
+</div>
 
-</section>
-
-
-
-<section class="page" id="page-categories">
-
-  <div class="page-heading"><h1>Not Kategorileri</h1><p>Kendi kategorilerini oluştur, her kategorinin altında sana özel notlar tut.</p></div>
-
-  <div class="panel"><h2>Yeni Kategori Oluştur</h2>
-
-    <form id="categoryForm" class="grid">
-
-      <label class="full">Kategori adı<input name="name" required maxlength="60" placeholder="Örn. Toplantılar, Projeler, Yapılacaklar"></label>
-
-      <div class="full"><button class="btn btn-primary" type="submit">＋ Kategori Oluştur</button></div>
-
-    </form>
-
-  </div>
-
-  <div class="panel"><h2>Kategorilerim</h2><div id="categoryList"></div></div>
-
-</section>
-
-
-
-<section class="page" id="page-notes">
-
-  <div class="page-heading"><h1>Notlarım</h1><p>Kendi notlarını yaz, kategorilere ayır ve daha sonra tekrar aç.</p></div>
-
-  <div class="panel">
-
-    <h2 id="noteFormTitle">Yeni Not</h2>
-
-    <form id="noteForm" class="grid">
-
-      <input type="hidden" name="id">
-
-      <label>Not başlığı *<input name="title" required maxlength="120" placeholder="Notun başlığı"></label>
-
-      <label>Kategori *<select name="categoryId" id="noteCategory" required></select></label>
-
-      <label class="full">Notun<textarea name="body" placeholder="Notlarını buraya yaz..." required></textarea></label>
-
-      <div class="full actions"><button class="btn btn-primary" type="submit" id="noteSave">Notu Kaydet</button><button class="btn btn-light hidden" type="button" id="noteCancel">Vazgeç</button></div>
-
-    </form>
-
-    <p class="hint">Notlar bu tarayıcıda saklanır; henüz kullanıcı hesabına bağlı değildir. Ortak kullanım kurulurken özel notlar için erişim kontrolü ekleyeceğiz.</p>
-
-  </div>
-
-  <div class="panel">
-
-    <h2>Kayıtlı Notlar</h2>
-
-    <div class="search-row"><input id="noteSearch" placeholder="Notlarda ara..."><select id="noteFilter" aria-label="Not kategorisi filtresi"><option value="">Tüm kategoriler</option></select></div>
-
-    <div id="noteList" class="item-list"></div><div id="notesEmpty" class="empty hidden">Henüz not yok. Bir kategori seçerek ilk notunu oluştur.</div>
-
-  </div>
-
-</section>
-
-<section class="page" id="page-smart">
-  <div class="page-heading"><h1>Akıllı Arama</h1><p>Kişi, birim, görev, uzmanlık, sorumluluk ve iş kayıtlarında tek yerden ara.</p></div>
-  <div class="panel">
-    <label for="smartSearchInput">Ne arıyorsun?</label>
-    <input id="smartSearchInput" placeholder="Örn. satın alma, bilgi işlem, Mehmet, evrak takibi...">
-    <p class="hint">Bir kişinin adını, dahili numarasını, birimi veya yaptığı işi yaz. Arama kayıtlı bilgiler içinde eşleşme bulur; internet veya yapay zekâ servisi kullanmaz.</p>
-  </div>
-  <div class="panel"><h2>Arama Sonuçları</h2><div id="smartSearchResults" class="item-list"><div class="empty">Aramak için yukarıya bir kelime yaz.</div></div></div>
-</section>
-
-<section class="page" id="page-units">
-  <div class="page-heading"><h1>Birimler ve Organizasyon</h1><p>Kurumdaki birimleri kaydet; kişileri birim adına göre ilişkilendir.</p></div>
-  <div class="panel"><h2>Yeni Birim Ekle / Düzenle</h2>
-    <form id="unitForm" class="grid">
-      <input type="hidden" name="id">
-      <label>Birim adı *<input name="name" required maxlength="100" placeholder="Örn. Bilgi İşlem Müdürlüğü"></label>
-      <label>Üst birim (isteğe bağlı)<input name="parent" list="unitOptions" maxlength="100" placeholder="Örn. İdari İşler Dairesi"></label>
-      <label class="full">Birim açıklaması<textarea name="description" placeholder="Birim görevleri, çalışma alanı ve notlar"></textarea></label>
-      <div class="full actions"><button class="btn btn-primary" type="submit" id="unitSave">Birimi Kaydet</button><button class="btn btn-light hidden" type="button" id="unitCancel">Vazgeç</button></div>
-    </form>
-  </div>
-  <div class="panel"><h2>Kayıtlı Birimler</h2><div id="unitList" class="item-list"></div><div id="unitsEmpty" class="empty hidden">Henüz birim yok. Yukarıdan ilk birimi ekle.</div></div>
-</section>
-
-<section class="page" id="page-tasks">
-  <div class="page-heading"><h1>İşler ve Sorumluluklar</h1><p>Yapılacak işleri kaydet, sorumlu kişiyi ve birimi ilişkilendir, durumunu takip et.</p></div>
-  <div class="panel"><h2 id="taskFormTitle">Yeni İş Kaydı</h2>
-    <form id="taskForm" class="grid">
-      <input type="hidden" name="id">
-      <label>İş / konu başlığı *<input name="title" required maxlength="140" placeholder="Örn. Aylık raporların hazırlanması"></label>
-      <label>Sorumlu kişi<select name="personId" id="taskPerson"><option value="">Kişi seç (isteğe bağlı)</option></select></label>
-      <label>Birim<input name="unit" list="unitOptions" placeholder="İlgili birim"></label>
-      <label>Öncelik<select name="priority"><option>Normal</option><option>Yüksek</option><option>Acil</option><option>Düşük</option></select></label>
-      <label>Durum<select name="status"><option>Başlanmadı</option><option>Devam Ediyor</option><option>Beklemede</option><option>Tamamlandı</option></select></label>
-      <label>Son tarih<input name="dueDate" type="date"></label>
-      <label class="full">İş açıklaması<textarea name="details" placeholder="İşin nasıl yapılacağı, ilgili süreçler ve önemli ayrıntılar"></textarea></label>
-      <div class="full actions"><button class="btn btn-primary" type="submit" id="taskSave">İşi Kaydet</button><button class="btn btn-light hidden" type="button" id="taskCancel">Vazgeç</button></div>
-    </form>
-  </div>
-  <div class="panel"><h2>Kayıtlı İşler</h2><div class="search-row"><input id="taskSearch" placeholder="İş, sorumlu, birim veya açıklama ara"><select id="taskStatusFilter"><option value="">Tüm durumlar</option><option>Başlanmadı</option><option>Devam Ediyor</option><option>Beklemede</option><option>Tamamlandı</option></select></div><div id="taskList" class="item-list"></div><div id="tasksEmpty" class="empty hidden">Bu ölçütlere uygun iş bulunamadı.</div></div>
-</section>
-
-<section class="page" id="page-shared">
-  <div class="page-heading"><h1>Ortak Kullanım ve Hesaplar</h1><p>EREN'i çalışma arkadaşlarınla aynı veriler üzerinde kullanmaya hazırlık.</p></div>
-  <div class="panel"><h2>Mevcut durum</h2><p>Şu an EREN, bu bilgisayarın ve tarayıcının yerel depolamasını kullanıyor. Burada kullanıcı hesabı açmak tek başına güvenli ortak kullanım sağlamaz.</p><p>Birden fazla bilgisayarda aynı kişileri ve işleri paylaşmak için çevrim içi veri tabanı, kullanıcı girişi, erişim kuralları ve güvenli yapılandırma gerekir. Bunlar kurulmadan bu ekrandan gerçek hesap oluşturulamaz.</p><span class="badge">Ortak sunucu henüz bağlanmadı</span></div>
-  <div class="panel"><h2>Kurulum sırası</h2><ol><li>Önce birim ve iş kayıtlarını bu sürümde düzenle.</li><li>Excel / Rehber Aktarımı bölümünden tam JSON yedeğini indir.</li><li>Sonraki aşamada çevrim içi veri tabanı ve kullanıcı kimlik doğrulamasını kuracağız.</li><li>Mevcut kişiler, notlar, özel notlar, birimler ve işler yedekten taşınacak; özel notlar sadece yetkili kullanıcısına açılacak şekilde tasarlanacak.</li></ol><p class="hint">Güvenlik için kullanıcı adı/parola bilgisini doğrudan HTML dosyasına yazmayacağız.</p></div>
-</section>
-
-<footer>EREN · Kişi Bilgi Sistemi</footer>
-
-</main>
-
-
+<input type="file" id="importFile" accept=".csv,.txt,.vcf,text/csv,text/vcard" hidden>
+<div id="toast" class="toast" hidden></div>
 
 <script>
-
+(function(){
 "use strict";
 
+const STORAGE_KEY = "eren_system_data_v1";
+const THEME_KEY = "eren_theme_v1";
 
+const emptyData = () => ({people:[],units:[],tasks:[],notes:[]});
+let data = loadData();
+let currentView = "home";
+let toastTimer = null;
 
-const KEYS={people:"eren_people_v1",categories:"eren_note_categories_v1",notes:"eren_notes_v1",privatePersonNotes:"eren_private_person_notes_v1",units:"eren_units_v1",tasks:"eren_tasks_v1"};
-
-const PERSON_FIELDS=["name","unit","job","workplace","roomFloor","extension","phone","email","category","expertise","responsibilities","notes","additionalInfo","photo"];
-
-const CSV_HEADERS=["Ad Soyad","Birim","Görev","Çalışma Yeri","Oda / Kat","Dahili","Telefon","E-posta","Kategori","Uzmanlık Alanları","Sorumlu Olduğu İşler","Görev Açıklaması","Ek Açıklamalar"];
-
-const CSV_FIELDS=["name","unit","job","workplace","roomFloor","extension","phone","email","category","expertise","responsibilities","notes","additionalInfo"];
-
-
-
-function loadArray(key){try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[]}catch(error){return[]}}
-
-let people=loadArray(KEYS.people),categories=loadArray(KEYS.categories),notes=loadArray(KEYS.notes),units=loadArray(KEYS.units),tasks=loadArray(KEYS.tasks);
-function loadObject(key){try{const value=JSON.parse(localStorage.getItem(key)||"{}");return value&&typeof value==="object"&&!Array.isArray(value)?value:{}}catch(error){return{}}}
-let privatePersonNotes=loadObject(KEYS.privatePersonNotes);
-let currentProfileId=null, pendingPhoto="", photoChanged=false;
-
-
-
-function makeId(){return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,10)}
-
-function saveArray(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(error){alert("Kayıt saklanamadı. Tarayıcının depolama alanı dolu olabilir. Daha küçük fotoğraflar kullan veya kayıtları dışa aktar.");return false}}
-function saveArrayObject(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true}catch(error){alert("Özel not kaydedilemedi. Tarayıcının depolama alanı dolu olabilir.");return false}}
-
-function esc(value){return String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]))}
-
-function csvCell(value){return '"'+String(value??"").replace(/"/g,'""')+'"'}
-
-function downloadCSV(filename,headers,rows){const content="\uFEFF"+[headers,...rows].map(row=>row.map(csvCell).join(";")).join("\r\n");const blob=new Blob([content],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500)}
-
-function formatDate(value){if(!value)return"Tarih belirtilmedi";const date=new Date(value);if(Number.isNaN(date.getTime()))return"";return date.toLocaleString("tr-TR",{dateStyle:"short",timeStyle:"short"})}
-
-function telHref(value){return "tel:"+String(value||"").replace(/[^\d+*#;]/g,"")}
-
-
-
-/* Görünüm: açık/koyu tema */
-const themeToggle=document.getElementById("themeToggle");
-function applyTheme(theme){document.body.classList.toggle("dark-mode",theme==="dark");themeToggle.textContent=theme==="dark"?"☀":"☾";themeToggle.title=theme==="dark"?"Açık temaya geç":"Koyu temaya geç";try{localStorage.setItem("eren_theme_v1",theme)}catch(error){}}
-let savedTheme="light";try{savedTheme=localStorage.getItem("eren_theme_v1")||"light"}catch(error){}
-applyTheme(savedTheme);
-themeToggle.addEventListener("click",()=>applyTheme(document.body.classList.contains("dark-mode")?"light":"dark"));
-
-/* Tam yedekleme: tüm EREN verileri tek JSON dosyasında */
-function makeBackup(){return {app:"EREN",backupVersion:2,createdAt:new Date().toISOString(),people,categories,notes,privatePersonNotes,units,tasks,theme:(document.body.classList.contains("dark-mode")?"dark":"light")}}
-function downloadBackup(){
- const backup=makeBackup(),blob=new Blob([JSON.stringify(backup,null,2)],{type:"application/json;charset=utf-8"}),url=URL.createObjectURL(blob),a=document.createElement("a");
- a.href=url;a.download="EREN_Tam_Yedek_"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
- alert("Tam yedek indirildi. Dosyayı güvenli bir yerde sakla.");
-}
-document.getElementById("backupButton").addEventListener("click",downloadBackup);
-document.getElementById("restoreButton").addEventListener("click",()=>{
- const fileInput=document.getElementById("restoreFile"),file=fileInput.files&&fileInput.files[0];
- if(!file){alert("Önce bir EREN .json yedek dosyası seç.");return}
- if(!confirm("Geri yükleme bu tarayıcıdaki mevcut kişi, not ve kategori kayıtlarının üzerine yazacak. Devam etmeden önce mevcut verilerini yedeklediğinden emin ol. Devam edilsin mi?"))return;
- const reader=new FileReader();
- reader.onload=()=>{
-  try{
-   const data=JSON.parse(String(reader.result||""));
-   if(!data||data.app!=="EREN"||!Array.isArray(data.people)||!Array.isArray(data.categories)||!Array.isArray(data.notes)||!data.privatePersonNotes||typeof data.privatePersonNotes!=="object"||Array.isArray(data.privatePersonNotes))throw new Error("Geçersiz yedek");
-   localStorage.setItem(KEYS.people,JSON.stringify(data.people));localStorage.setItem(KEYS.categories,JSON.stringify(data.categories));localStorage.setItem(KEYS.notes,JSON.stringify(data.notes));localStorage.setItem(KEYS.privatePersonNotes,JSON.stringify(data.privatePersonNotes));localStorage.setItem(KEYS.units,JSON.stringify(Array.isArray(data.units)?data.units:[]));localStorage.setItem(KEYS.tasks,JSON.stringify(Array.isArray(data.tasks)?data.tasks:[]));
-   localStorage.setItem("eren_theme_v1",data.theme==="dark"?"dark":"light");
-   alert("Yedek başarıyla geri yüklendi. EREN şimdi yenilenecek.");location.reload();
-  }catch(error){alert("Yedek dosyası okunamadı veya geçersiz. Hiçbir şeyi değiştirmemiş olabilir. Doğru EREN .json dosyasını seç.")}
- };
- reader.onerror=()=>alert("Yedek dosyası okunamadı.");reader.readAsText(file);
-});
-
-/* Menü ve sayfalar */
-
-const sidebar=document.getElementById("sidebar"),overlay=document.getElementById("overlay"),menuOpen=document.getElementById("menuOpen");
-
-function openMenu(){sidebar.classList.add("open");overlay.classList.add("show");menuOpen.setAttribute("aria-expanded","true")}
-
-function closeMenu(){sidebar.classList.remove("open");overlay.classList.remove("show");menuOpen.setAttribute("aria-expanded","false")}
-
-menuOpen.addEventListener("click",()=>sidebar.classList.contains("open")?closeMenu():openMenu());
-
-document.getElementById("menuClose").addEventListener("click",closeMenu);
-
-overlay.addEventListener("click",closeMenu);
-
-
-
-function go(page){
-
- document.querySelectorAll(".page").forEach(el=>el.classList.remove("active"));
-
- const target=document.getElementById("page-"+page);
-
- if(!target)return;
-
- target.classList.add("active");
-
- document.querySelectorAll(".nav-button").forEach(btn=>btn.classList.toggle("active",btn.dataset.page===page));
-
- closeMenu();window.scrollTo({top:0,behavior:"auto"});
-
- if(page==="people")renderPeople();
-
- if(page==="notes")renderNotes();
-
- if(page==="categories")renderCategories();
-
- if(page==="home")renderHome();
-  if(page==="units"){renderUnitOptions();renderUnitList()}
-  if(page==="tasks"){renderTaskPersonOptions();renderTasks()}
-  if(page==="smart")renderSmartSearch();
-
+function loadData(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return emptyData();
+    const parsed = JSON.parse(raw);
+    return {
+      people:Array.isArray(parsed.people)?parsed.people:[],
+      units:Array.isArray(parsed.units)?parsed.units:[],
+      tasks:Array.isArray(parsed.tasks)?parsed.tasks:[],
+      notes:Array.isArray(parsed.notes)?parsed.notes:[]
+    };
+  } catch(e){ return emptyData(); }
 }
 
-document.querySelectorAll("[data-page]").forEach(btn=>btn.addEventListener("click",()=>go(btn.dataset.page)));
+function saveData(){
+  try {
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    renderAll();
+    return true;
+  } catch(e){
+    alert("Kayıt yapılamadı. Cihazda yeterli depolama alanı olmayabilir.");
+    return false;
+  }
+}
 
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+function esc(value){
+  return String(value==null?"":value).replace(/[&<>"']/g,ch=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+}
+function notify(message){
+  const el=document.getElementById("toast");
+  el.textContent=message;el.hidden=false;
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.hidden=true,2600);
+}
+function downloadFile(name,content,type){
+  const blob=new Blob(["\ufeff",content],{type:type||"text/plain;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function csvCell(value){
+  let s=String(value==null?"":value);
+  if(/^[=+\-@\t\r]/.test(s)) s="'"+s;
+  return '"'+s.replace(/"/g,'""')+'"';
+}
+function exportCSV(){
+  const headers=["Ad","Soyad","Telefon","Dahili Numara","E-posta","Birim","Görev","Kategori","Adres","Not"];
+  const rows=data.people.map(p=>[
+    p.firstName,p.lastName,p.phone,p.extension,p.email,p.unit,p.job,p.category,p.address,p.notes
+  ]);
+  const csv=[headers,...rows].map(row=>row.map(csvCell).join(";")).join("\r\n");
+  downloadFile("EREN_Kisiler.csv",csv,"text/csv;charset=utf-8");
+  notify("Kişiler Excel uyumlu CSV olarak indirildi.");
+}
+
+function exportVCard(){
+  if(!data.people.length){notify("Dışa aktarılacak kişi yok.");return}
+  const lines=["BEGIN:VCARD","VERSION:3.0"];
+  const blocks=data.people.map(p=>{
+    const n=[p.lastName||"",p.firstName||""].join(";");
+    const parts=["BEGIN:VCARD","VERSION:3.0","N:"+vEscape(n),"FN:"+vEscape((p.firstName+" "+p.lastName).trim())];
+    if(p.phone)parts.push("TEL;TYPE=CELL:"+vEscape(p.phone));
+    if(p.email)parts.push("EMAIL:"+vEscape(p.email));
+    if(p.address)parts.push("ADR;TYPE=HOME:;;"+vEscape(p.address)+";;;;");
+    if(p.job)parts.push("TITLE:"+vEscape(p.job));
+    if(p.unit)parts.push("ORG:"+vEscape(p.unit));
+    parts.push("END:VCARD");
+    return parts.join("\r\n");
+  });
+  downloadFile("EREN_Rehber.vcf",blocks.join("\r\n"),"text/vcard;charset=utf-8");
+  notify("Rehber dosyası oluşturuldu.");
+}
+function vEscape(s){return String(s||"").replace(/\\/g,"\\\\").replace(/\n/g,"\\n").replace(/,/g,"\\,").replace(/;/g,"\\;")}
+
+function go(view){
+  currentView=view;
+  document.querySelectorAll(".view").forEach(el=>el.classList.remove("active"));
+  const section=document.getElementById(view+"View");
+  if(section)section.classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(el=>el.classList.toggle("active",el.dataset.go===view));
+  if(view==="people")renderPeople();
+  if(view==="units")renderUnits();
+  if(view==="tasks")renderTasks();
+  if(view==="notes")renderNotes();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
 document.querySelectorAll("[data-go]").forEach(btn=>btn.addEventListener("click",()=>go(btn.dataset.go)));
 
-
-
-/* Kişi formu ve fotoğrafı */
-
-const personForm=document.getElementById("personForm");
-
-function showPhotoPreview(src){
-
- const wrap=document.getElementById("photoPreviewWrap"),img=document.getElementById("photoPreview");
-
- if(src){img.src=src;wrap.style.display="block"}else{img.removeAttribute("src");wrap.style.display="none"}
-
+function renderAll(){
+  document.getElementById("peopleCount").textContent=data.people.length;
+  document.getElementById("unitCount").textContent=data.units.length;
+  document.getElementById("taskCount").textContent=data.tasks.filter(t=>t.status!=="Tamamlandı").length;
+  renderPeople();renderUnits();renderTasks();renderNotes();
 }
 
-function resetPersonForm(){
-
- personForm.reset();personForm.elements.id.value="";pendingPhoto="";photoChanged=false;
-
- document.getElementById("personPhoto").value="";
-
- showPhotoPreview("");
-
- document.getElementById("personFormTitle").textContent="Kişi Ekle";
-
- document.getElementById("personSave").textContent="Kişiyi Kaydet";
-
- document.getElementById("personCancel").classList.add("hidden");
-
- renderPersonCategories();
-
+function personText(p){
+  return [p.firstName,p.lastName,p.phone,p.extension,p.email,p.unit,p.job,p.category,p.address,p.notes].join(" ").toLocaleLowerCase("tr");
 }
-
-function renderPersonCategories(){
-
- const select=document.getElementById("personCategory"),current=select.value;
-
- const defaults=["Personel","Yönetici","Teknik","İdari","Diğer"];
-
- const custom=categories.map(c=>c.name).filter(name=>!defaults.includes(name));
-
- select.innerHTML=[...defaults,...custom].map(name=>`<option value="${esc(name)}">${esc(name)}</option>`).join("");
-
- if([...select.options].some(option=>option.value===current))select.value=current;
-
-}
-
-document.getElementById("personPhoto").addEventListener("change",event=>{
-
- const file=event.target.files[0];if(!file)return;
-
- if(!file.type.startsWith("image/")){alert("Lütfen bir resim dosyası seç.");event.target.value="";return}
-
- if(file.size>3*1024*1024){alert("Fotoğraf 3 MB'dan büyük. Lütfen daha küçük bir fotoğraf seç.");event.target.value="";return}
-
- const reader=new FileReader();
-
- reader.onload=()=>{pendingPhoto=String(reader.result||"");photoChanged=true;showPhotoPreview(pendingPhoto)};
-
- reader.onerror=()=>alert("Fotoğraf okunamadı.");
-
- reader.readAsDataURL(file);
-
-});
-
-document.getElementById("removePhoto").addEventListener("click",()=>{pendingPhoto="";photoChanged=true;showPhotoPreview("");document.getElementById("personPhoto").value=""});
-
-
-
-personForm.addEventListener("submit",event=>{
-
- event.preventDefault();
-
- const data=Object.fromEntries(new FormData(personForm).entries()),id=data.id;delete data.id;
-
- const oldPeople=people;
-
- if(id){
-
-  const existing=people.find(person=>person.id===id);
-
-  if(!existing){alert("Düzenlenecek kişi bulunamadı.");resetPersonForm();return}
-
-  data.photo=photoChanged?pendingPhoto:(existing.photo||"");
-
-  people=people.map(person=>person.id===id?{...person,...data,id}:person);
-
- }else{
-
-  data.photo=photoChanged?pendingPhoto:"";
-
-  people=[{...data,id:makeId(),createdAt:new Date().toISOString()},...people];
-
- }
-
- if(!saveArray(KEYS.people,people)){people=oldPeople;return}
-
- resetPersonForm();renderAll();alert(id?"Kişi bilgileri güncellendi.":"Kişi kaydedildi.");go("people");
-
-});
-
-/* iPhone / iOS Kişiler vCard (.vcf) aktarımı */
-function decodeVCardValue(value){
-  return String(value||"")
-    .replace(/\\n/gi,"\n")
-    .replace(/\\,/g,",")
-    .replace(/\\;/g,";")
-    .replace(/\\\\/g,"\\")
-    .trim();
-}
-function parseVCardContacts(text){
-  const unfolded=String(text||"").replace(/\r\n[ \t]/g,"").replace(/\n[ \t]/g,"");
-  const blocks=unfolded.match(/BEGIN:VCARD[\s\S]*?END:VCARD/gi)||[];
-  return blocks.map(block=>{
-    const lines=block.split(/\r?\n/);
-    const fields={name:"",phone:"",email:""};
-    let structuredName="";
-    for(const line of lines){
-      const colon=line.indexOf(":");
-      if(colon<0)continue;
-      const rawKey=line.slice(0,colon).split(";")[0].toUpperCase();
-      const value=decodeVCardValue(line.slice(colon+1));
-      if(rawKey==="FN"&&!fields.name)fields.name=value;
-      else if(rawKey==="N"&&!structuredName)structuredName=value;
-      else if(rawKey==="TEL"&&!fields.phone)fields.phone=value;
-      else if(rawKey==="EMAIL"&&!fields.email)fields.email=value;
-    }
-    if(!fields.name&&structuredName){
-      const parts=structuredName.split(";").map(x=>decodeVCardValue(x));
-      fields.name=[parts[1],parts[2],parts[0],parts[3],parts[4]].filter(Boolean).join(" ").replace(/\s+/g," ").trim();
-    }
-    return fields;
-  }).filter(person=>person.name||person.phone||person.email);
-}
-document.getElementById("vcardFile").addEventListener("change",async event=>{
-  const files=Array.from(event.target.files||[]);
-  if(!files.length)return;
-  try{
-    let contacts=[];
-    for(const file of files){
-      if(!/\.vcf$/i.test(file.name)&&file.type!=="text/vcard"&&file.type!=="text/x-vcard"){
-        alert("Lütfen iPhone'dan paylaşılan .vcf kişi kartını seç.");continue;
-      }
-      contacts=contacts.concat(parseVCardContacts(await file.text()));
-    }
-    contacts=contacts.filter(c=>c.name||c.phone||c.email);
-    if(!contacts.length){alert("Dosyada okunabilir kişi bilgisi bulunamadı. Kişiyi yeniden .vcf olarak paylaşmayı dene.");return;}
-    if(contacts.length===1){
-      const contact=contacts[0];
-      if(contact.name)personForm.elements.name.value=contact.name;
-      if(contact.phone)personForm.elements.phone.value=contact.phone;
-      if(contact.email)personForm.elements.email.value=contact.email;
-      go("add");
-      alert("Kişi bilgileri forma dolduruldu. Gerekirse diğer bilgileri ekleyip 'Kişiyi Kaydet' düğmesine bas.");
-    }else{
-      const ready=contacts.filter(c=>c.name.trim());
-      if(!ready.length){alert("Dosyada adı bulunan kişi yok.");return;}
-      if(!confirm(ready.length+" kişi EREN'e eklenecek. Mevcut kişiler korunacak. Devam edilsin mi?"))return;
-      const oldPeople=people;
-      people=[...ready.map(c=>({
-        name:c.name,phone:c.phone,email:c.email,unit:"",job:"",workplace:"",roomFloor:"",
-        extension:"",category:"Personel",expertise:"",responsibilities:"",notes:"",
-        additionalInfo:"iPhone rehberinden aktarıldı",photo:"",id:makeId(),
-        createdAt:new Date().toISOString()
-      })),...people];
-      if(!saveArray(KEYS.people,people)){people=oldPeople;return;}
-      renderAll();
-      alert(ready.length+" kişi EREN'e eklendi.");
-      go("people");
-    }
-  }catch(error){
-    alert("Kişi kartı okunamadı. iPhone Kişiler uygulamasından kişiyi yeniden .vcf biçiminde paylaşmayı dene.");
-  }finally{
-    event.target.value="";
-  }
-});
-
-document.getElementById("personCancel").addEventListener("click",resetPersonForm);
-
-
-
-function editPerson(id){
-
- const person=people.find(p=>p.id===id);if(!person)return;
-
- renderPersonCategories();
-
- for(const field of ["id",...PERSON_FIELDS])if(personForm.elements[field])personForm.elements[field].value=person[field]??"";
-
- pendingPhoto=person.photo||"";photoChanged=false;showPhotoPreview(pendingPhoto);
-
- document.getElementById("personFormTitle").textContent="Kişiyi Düzenle";
-
- document.getElementById("personSave").textContent="Değişiklikleri Kaydet";
-
- document.getElementById("personCancel").classList.remove("hidden");
-
- go("add");
-
-}
-
-function deletePerson(id){
-
- const person=people.find(p=>p.id===id);if(!person||!confirm(person.name+" kaydını silmek istiyor musun?"))return;
-
- const oldPeople=people;people=people.filter(p=>p.id!==id);
-
- if(!saveArray(KEYS.people,people)){people=oldPeople;return}
-
- if(Object.prototype.hasOwnProperty.call(privatePersonNotes,id)){
-    const oldPrivateNotes=privatePersonNotes;
-    privatePersonNotes={...privatePersonNotes};delete privatePersonNotes[id];
-    if(!saveArrayObject(KEYS.privatePersonNotes,privatePersonNotes))privatePersonNotes=oldPrivateNotes;
-  }
-  if(currentProfileId===id){currentProfileId=null;go("people")}
-
- renderAll();
-
-}
-
-
-
-/* Kişi listesi ve detay kartı */
-
 function renderPeople(){
-
- const query=document.getElementById("peopleSearch").value.trim().toLocaleLowerCase("tr-TR"),filter=document.getElementById("peopleFilter").value;
-
- const filtered=people.filter(person=>{
-
-  const matchesCategory=!filter||person.category===filter;
-
-  const searchable=PERSON_FIELDS.map(field=>person[field]||"").join(" ").toLocaleLowerCase("tr-TR");
-
-  return matchesCategory&&searchable.includes(query);
-
- });
-
- document.getElementById("peopleCount").textContent=`Toplam ${people.length} kişi · ${filtered.length} sonuç`;
-
- const tbody=document.getElementById("peopleList");tbody.innerHTML="";
-
- document.getElementById("peopleEmpty").classList.toggle("hidden",filtered.length>0);
-
- filtered.forEach(person=>{
-
-  const tr=document.createElement("tr");
-
-  tr.innerHTML=`
-
-   <td><button class="click-name" data-profile="${esc(person.id)}">${esc(person.name)}</button><div class="muted">${esc(person.email||"")}</div></td>
-
-   <td>${esc(person.unit||"-")}<div class="muted">${esc(person.job||"")}</div></td>
-
-   <td>${esc(person.phone||"-")}<div class="muted">Dahili: ${esc(person.extension||"-")}</div></td>
-
-   <td><span class="badge">${esc(person.category||"Diğer")}</span><div class="muted">${esc(person.workplace||"")} ${person.roomFloor?"· "+esc(person.roomFloor):""}</div></td>
-
-   <td><div class="actions"><button class="btn btn-small btn-light" data-edit-person="${esc(person.id)}">Düzenle</button><button class="btn btn-small btn-danger" data-delete-person="${esc(person.id)}">Sil</button></div></td>`;
-
-  tbody.appendChild(tr);
-
- });
-
+  const target=document.getElementById("peopleList");
+  if(!target)return;
+  const q=(document.getElementById("peopleSearch")?.value||"").trim().toLocaleLowerCase("tr");
+  const global=(document.getElementById("globalSearch")?.value||"").trim().toLocaleLowerCase("tr");
+  const search=q||global;
+  const list=data.people.filter(p=>!search||personText(p).includes(search));
+  if(!list.length){
+    target.innerHTML='<div class="panel empty">'+(data.people.length?"Aramana uygun kişi bulunamadı.":"Henüz kişi eklenmemiş. İlk kişini ekleyebilirsin.")+'</div>';
+    return;
+  }
+  target.innerHTML=list.map(p=>`
+    <div class="item">
+      <div class="item-main">
+        <h4>${esc((p.firstName+" "+p.lastName).trim()||"İsimsiz kişi")}</h4>
+        ${p.job?`<p>${esc(p.job)}</p>`:""}
+        ${p.unit?`<span class="pill">🏢 ${esc(p.unit)}</span>`:""}
+        ${p.category?`<span class="pill">${esc(p.category)}</span>`:""}
+        ${p.phone?`<p>☎ ${esc(p.phone)}</p>`:""}
+        ${p.extension?`<p>☎ Dahili: ${esc(p.extension)}</p>`:""}
+        ${p.email?`<p>✉ ${esc(p.email)}</p>`:""}
+        ${p.address?`<p>⌖ ${esc(p.address)}</p>`:""}
+        ${p.notes?`<p>${esc(p.notes)}</p>`:""}
+      </div>
+      <div class="item-actions">
+        ${p.phone?`<a class="btn secondary small" href="tel:${esc(p.phone.replace(/[^\d+]/g,""))}">Ara</a>`:""}
+        <button class="btn secondary small" data-edit-person="${esc(p.id)}">Düzenle</button>
+        <button class="btn danger small" data-delete-person="${esc(p.id)}">Sil</button>
+      </div>
+    </div>`).join("");
+  target.querySelectorAll("[data-edit-person]").forEach(b=>b.onclick=()=>editPerson(b.dataset.editPerson));
+  target.querySelectorAll("[data-delete-person]").forEach(b=>b.onclick=()=>deleteRecord("people",b.dataset.deletePerson));
 }
 
-document.getElementById("peopleSearch").addEventListener("input",renderPeople);
-
-document.getElementById("peopleFilter").addEventListener("change",renderPeople);
-
-document.getElementById("peopleList").addEventListener("click",event=>{
-
- const profile=event.target.closest("[data-profile]"),edit=event.target.closest("[data-edit-person]"),del=event.target.closest("[data-delete-person]");
-
- if(profile)showProfile(profile.dataset.profile);
-
- if(edit)editPerson(edit.dataset.editPerson);
-
- if(del)deletePerson(del.dataset.deletePerson);
-
-});
-
-
-
-function addProfileField(container,label,value,options={}){
-
- if(!value)return;
-
- const div=document.createElement("div");div.className="profile-field"+(options.full?" full":"");
-
- const safeLabel=esc(label);
-
- let content=esc(value);
-
- if(options.type==="phone")content=`<a class="profile-link" href="${esc(telHref(value))}">${esc(value)}</a>`;
-
- if(options.type==="email")content=`<a class="profile-link" href="mailto:${esc(value)}">${esc(value)}</a>`;
-
- div.innerHTML=`<div class="profile-label">${safeLabel}</div><div class="profile-value">${content}</div>`;
-
- container.appendChild(div);
-
+function renderUnits(){
+  const target=document.getElementById("unitsList");if(!target)return;
+  if(!data.units.length){target.innerHTML='<div class="panel empty">Henüz birim yok. Birim ekleyerek başlayabilirsin.</div>';return}
+  target.innerHTML=data.units.map(u=>`
+    <div class="item"><div class="item-main"><h4>${esc(u.name)}</h4>${u.description?`<p>${esc(u.description)}</p>`:""}</div>
+    <div class="item-actions"><button class="btn secondary small" data-edit-unit="${esc(u.id)}">Düzenle</button><button class="btn danger small" data-delete-unit="${esc(u.id)}">Sil</button></div></div>`).join("");
+  target.querySelectorAll("[data-edit-unit]").forEach(b=>b.onclick=()=>editUnit(b.dataset.editUnit));
+  target.querySelectorAll("[data-delete-unit]").forEach(b=>b.onclick=()=>deleteRecord("units",b.dataset.deleteUnit));
 }
-
-function showProfile(id){
-
- const person=people.find(p=>p.id===id);if(!person)return;
-
- currentProfileId=id;
-
- document.getElementById("profileName").textContent=person.name||"İsimsiz kişi";
-
- document.getElementById("profileJob").textContent=[person.job,person.unit].filter(Boolean).join(" · ");
-
- document.getElementById("profileCategory").innerHTML=`<span class="badge">${esc(person.category||"Diğer")}</span>`;
-document.getElementById("profilePrivateNote").value=privatePersonNotes[id]||"";
-
- const photo=document.getElementById("profilePhoto"),placeholder=document.getElementById("profilePlaceholder");
-
- if(person.photo){photo.src=person.photo;photo.classList.remove("hidden");placeholder.classList.add("hidden")}
-
- else{photo.removeAttribute("src");photo.classList.add("hidden");placeholder.classList.remove("hidden")}
-
- const fields=document.getElementById("profileFields");fields.innerHTML="";
-
- addProfileField(fields,"Kurum / Birim",person.unit);
-
- addProfileField(fields,"Görev / Unvan",person.job);
-
- addProfileField(fields,"Çalıştığı Yer",person.workplace);
-
- addProfileField(fields,"Oda / Kat",person.roomFloor);
-
- addProfileField(fields,"Dahili Telefon",person.extension,{type:"phone"});
-
- addProfileField(fields,"Telefon Numarası",person.phone,{type:"phone"});
-
- addProfileField(fields,"E-posta",person.email,{type:"email"});
-
- addProfileField(fields,"Uzmanlık Alanları",person.expertise,{full:true});
-
- addProfileField(fields,"Sorumlu Olduğu İşler",person.responsibilities,{full:true});
-
- addProfileField(fields,"Görev Açıklaması",person.notes,{full:true});
-
- addProfileField(fields,"Ek Açıklamalar",person.additionalInfo,{full:true});
-
- if(!fields.children.length)fields.innerHTML='<div class="empty full">Bu kişi için henüz ek bilgi girilmemiş.</div>';
-
- go("profile");
-
+function renderTasks(){
+  const target=document.getElementById("tasksList");if(!target)return;
+  if(!data.tasks.length){target.innerHTML='<div class="panel empty">Henüz görev eklenmemiş.</div>';return}
+  const sorted=[...data.tasks].sort((a,b)=>(a.status==="Tamamlandı")-(b.status==="Tamamlandı"));
+  target.innerHTML=sorted.map(t=>`
+    <div class="item"><div class="item-main"><h4>${esc(t.title)}</h4>
+    <span class="pill">${esc(t.status||"Bekliyor")}</span>${t.due?`<span class="pill">📅 ${esc(t.due)}</span>`:""}
+    ${t.description?`<p>${esc(t.description)}</p>`:""}</div>
+    <div class="item-actions"><button class="btn secondary small" data-toggle-task="${esc(t.id)}">${t.status==="Tamamlandı"?"Geri al":"Tamamla"}</button><button class="btn secondary small" data-edit-task="${esc(t.id)}">Düzenle</button><button class="btn danger small" data-delete-task="${esc(t.id)}">Sil</button></div></div>`).join("");
+  target.querySelectorAll("[data-toggle-task]").forEach(b=>b.onclick=()=>{
+    const t=data.tasks.find(x=>x.id===b.dataset.toggleTask);if(!t)return;
+    t.status=t.status==="Tamamlandı"?"Bekliyor":"Tamamlandı";saveData();
+  });
+  target.querySelectorAll("[data-edit-task]").forEach(b=>b.onclick=()=>editTask(b.dataset.editTask));
+  target.querySelectorAll("[data-delete-task]").forEach(b=>b.onclick=()=>deleteRecord("tasks",b.dataset.deleteTask));
 }
-
-document.getElementById("profileEdit").addEventListener("click",()=>{if(currentProfileId)editPerson(currentProfileId)});
-
-document.getElementById("profileBack").addEventListener("click",()=>go("people"));
-document.getElementById("saveProfilePrivateNote").addEventListener("click",()=>{
-  if(!currentProfileId||!people.some(person=>person.id===currentProfileId)){alert("Önce bir kişi kartı aç.");return}
-  const oldPrivateNotes=privatePersonNotes;
-  privatePersonNotes={...privatePersonNotes,[currentProfileId]:document.getElementById("profilePrivateNote").value};
-  if(!saveArrayObject(KEYS.privatePersonNotes,privatePersonNotes)){privatePersonNotes=oldPrivateNotes;return}
-  alert("Kişiye özel not bu tarayıcıya kaydedildi.");
-});
-document.getElementById("clearProfilePrivateNote").addEventListener("click",()=>{
-  if(!currentProfileId)return;
-  if(!confirm("Bu kişiye ait özel not silinsin mi?"))return;
-  const oldPrivateNotes=privatePersonNotes;
-  privatePersonNotes={...privatePersonNotes};delete privatePersonNotes[currentProfileId];
-  if(!saveArrayObject(KEYS.privatePersonNotes,privatePersonNotes)){privatePersonNotes=oldPrivateNotes;return}
-  document.getElementById("profilePrivateNote").value="";
-  alert("Kişiye özel not silindi.");
-});
-
-
-
-/* CSV dışa aktarma */
-
-function exportPeople(){
-
- if(!people.length){alert("Dışa aktarılacak kişi bulunmuyor.");return}
-
- downloadCSV("EREN_Kisi_Rehberi.csv",CSV_HEADERS,people.map(person=>CSV_FIELDS.map(field=>person[field]||"")));
-
-}
-
-document.getElementById("exportButton").addEventListener("click",exportPeople);
-
-document.getElementById("peopleExport").addEventListener("click",exportPeople);
-
-
-
-/* CSV okuma */
-
-function parseCSV(text){
-
- text=text.replace(/^\uFEFF/,"");
-
- const firstLine=(text.split(/\r?\n/).find(line=>line.trim())||"");
-
- const commaCount=(firstLine.match(/,/g)||[]).length,semicolonCount=(firstLine.match(/;/g)||[]).length;
-
- const delimiter=semicolonCount>commaCount?";":",";
-
- const rows=[];let row=[],cell="",quoted=false;
-
- for(let i=0;i<text.length;i++){
-
-  const ch=text[i];
-
-  if(ch==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++}else quoted=!quoted}
-
-  else if(ch===delimiter&&!quoted){row.push(cell.trim());cell=""}
-
-  else if((ch==="\n"||ch==="\r")&&!quoted){
-
-   if(ch==="\r"&&text[i+1]==="\n")i++;
-
-   row.push(cell.trim());if(row.some(value=>value!==""))rows.push(row);row=[];cell="";
-
-  }else cell+=ch;
-
- }
-
- row.push(cell.trim());if(row.some(value=>value!==""))rows.push(row);
-
- return rows;
-
-}
-
-function normalizeHeader(value){return String(value).trim().toLocaleLowerCase("tr-TR")}
-
-document.getElementById("importButton").addEventListener("click",async()=>{
-
- const file=document.getElementById("csvFile").files[0];
-
- if(!file){alert("Önce bir CSV dosyası seç.");return}
-
- try{
-
-  const rows=parseCSV(await file.text());
-
-  if(rows.length<2){alert("Dosyada başlık ve en az bir kişi bulunmalı.");return}
-
-  const headers=rows[0].map(normalizeHeader);
-
-  const aliases=[
-
-   ["name",["ad soyad","adsoyad","isim"]],
-
-   ["unit",["birim","kurum / birim","kurum/birim"]],
-
-   ["job",["görev","unvan","görev / unvan"]],
-
-   ["workplace",["çalışma yeri","calisma yeri"]],
-
-   ["roomFloor",["oda / kat","oda kat","oda","kat"]],
-
-   ["extension",["dahili","dahili telefon"]],
-
-   ["phone",["telefon","telefon numarası"]],
-
-   ["email",["e-posta","eposta","email"]],
-
-   ["category",["kategori"]],
-
-   ["expertise",["uzmanlık alanları","uzmanlik alanlari","uzmanlık","uzmanlik"]],
-
-   ["responsibilities",["sorumlu olduğu işler","sorumlu oldugu isler","sorumluluklar"]],
-
-   ["notes",["notlar","görev açıklaması","görev açıklaması / notlar","açıklama"]],
-
-   ["additionalInfo",["ek açıklamalar","ek aciklamalar","ek bilgi"]]
-
-  ];
-
-  const indexes=Object.fromEntries(aliases.map(([field,names])=>[field,headers.findIndex(header=>names.includes(header))]));
-
-  if(indexes.name<0){alert("İlk satırda 'Ad Soyad' başlığı bulunamadı.");return}
-
-  const imported=rows.slice(1).map(cells=>{
-
-   const person={};
-
-   for(const [field] of aliases){const index=indexes[field];person[field]=index>=0?(cells[index]||""):""}
-
-   return person;
-
-  }).filter(person=>person.name.trim()!=="");
-
-  if(!imported.length){alert("Aktarılabilecek kişi bulunamadı.");return}
-
-  if(!confirm(imported.length+" kişi eklenecek. Mevcut kişiler korunacak. Devam edilsin mi?"))return;
-
-  const oldPeople=people;
-
-  people=[...imported.map(person=>({...person,photo:"",id:makeId()})),...people];
-
-  if(!saveArray(KEYS.people,people)){people=oldPeople;return}
-
-  document.getElementById("csvFile").value="";renderAll();
-
-  alert(imported.length+" kişi başarıyla aktarıldı.");go("people");
-
- }catch(error){alert("Dosya okunamadı. Excel'den CSV UTF-8 olarak kaydetmeyi dene.")}
-
-});
-
-
-
-/* Not kategorileri */
-
-const categoryForm=document.getElementById("categoryForm");
-
-categoryForm.addEventListener("submit",event=>{
-
- event.preventDefault();const name=categoryForm.elements.name.value.trim();if(!name)return;
-
- if(categories.some(c=>c.name.toLocaleLowerCase("tr-TR")===name.toLocaleLowerCase("tr-TR"))){alert("Bu kategori zaten var.");return}
-
- const old=categories;categories=[...categories,{id:makeId(),name}];
-
- if(!saveArray(KEYS.categories,categories)){categories=old;return}
-
- categoryForm.reset();renderAll();alert("Kategori oluşturuldu.");
-
-});
-
-function renderCategoryOptions(){
-
- const noteSelect=document.getElementById("noteCategory"),noteFilter=document.getElementById("noteFilter");
-
- const oldNote=noteSelect.value,oldFilter=noteFilter.value;
-
- noteSelect.innerHTML=categories.length?categories.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join(""):'<option value="">Önce kategori oluştur</option>';
-
- noteSelect.disabled=categories.length===0;
-
- noteFilter.innerHTML='<option value="">Tüm kategoriler</option>'+categories.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("");
-
- if(categories.some(c=>c.id===oldNote))noteSelect.value=oldNote;
-
- if(categories.some(c=>c.id===oldFilter))noteFilter.value=oldFilter;
-
-}
-
-function renderCategories(){
-
- renderCategoryOptions();renderPersonCategories();
-
- const container=document.getElementById("categoryList");container.innerHTML="";
-
- if(!categories.length){container.innerHTML='<div class="empty">Henüz kategorin yok. Yukarıdan ilk kategorini oluştur.</div>';return}
-
- categories.forEach(category=>{
-
-  const noteCount=notes.filter(note=>note.categoryId===category.id).length,row=document.createElement("div");
-
-  row.className="category-row";
-
-  row.innerHTML=`<div><strong>${esc(category.name)}</strong><div class="muted">${noteCount} not</div></div><div class="actions"><button class="btn btn-small btn-light" data-open-category="${esc(category.id)}">Notları Aç</button><button class="btn btn-small btn-danger" data-delete-category="${esc(category.id)}">Sil</button></div>`;
-
-  container.appendChild(row);
-
- });
-
-}
-
-document.getElementById("categoryList").addEventListener("click",event=>{
-
- const open=event.target.closest("[data-open-category]"),del=event.target.closest("[data-delete-category]");
-
- if(open){document.getElementById("noteFilter").value=open.dataset.openCategory;document.getElementById("noteCategory").value=open.dataset.openCategory;go("notes");renderNotes()}
-
- if(del){
-
-  const category=categories.find(c=>c.id===del.dataset.deleteCategory);if(!category)return;
-
-  const count=notes.filter(note=>note.categoryId===category.id).length;
-
-  const message=count?`"${category.name}" kategorisindeki ${count} not da silinecek. Devam edilsin mi?`:`"${category.name}" kategorisi silinsin mi?`;
-
-  if(!confirm(message))return;
-
-  const oldCategories=categories,oldNotes=notes;
-
-  categories=categories.filter(c=>c.id!==category.id);notes=notes.filter(n=>n.categoryId!==category.id);
-
-  if(!saveArray(KEYS.categories,categories)){categories=oldCategories;notes=oldNotes;return}
-
-  if(!saveArray(KEYS.notes,notes)){categories=oldCategories;notes=oldNotes;saveArray(KEYS.categories,categories);return}
-
-  renderAll();
-
- }
-
-});
-
-
-
-/* Kişisel notlar */
-
-const noteForm=document.getElementById("noteForm");
-
-function resetNoteForm(){
-
- noteForm.reset();noteForm.elements.id.value="";
-
- document.getElementById("noteFormTitle").textContent="Yeni Not";
-
- document.getElementById("noteSave").textContent="Notu Kaydet";
-
- document.getElementById("noteCancel").classList.add("hidden");renderCategoryOptions();
-
-}
-
-noteForm.addEventListener("submit",event=>{
-
- event.preventDefault();const data=Object.fromEntries(new FormData(noteForm).entries()),id=data.id;delete data.id;
-
- if(!categories.some(c=>c.id===data.categoryId)){alert("Önce geçerli bir not kategorisi oluştur.");return}
-
- const old=notes;
-
- if(id){
-
-  if(!notes.some(n=>n.id===id)){alert("Düzenlenecek not bulunamadı.");resetNoteForm();return}
-
-  notes=notes.map(n=>n.id===id?{...n,...data,id,updatedAt:new Date().toISOString()}:n);
-
- }else notes=[{...data,id:makeId(),createdAt:new Date().toISOString()},...notes];
-
- if(!saveArray(KEYS.notes,notes)){notes=old;return}
-
- resetNoteForm();renderAll();alert(id?"Not güncellendi.":"Not kaydedildi.");
-
-});
-
-document.getElementById("noteCancel").addEventListener("click",resetNoteForm);
-
-document.getElementById("noteSearch").addEventListener("input",renderNotes);
-
-document.getElementById("noteFilter").addEventListener("change",renderNotes);
-
 function renderNotes(){
-
- renderCategoryOptions();
-
- const query=document.getElementById("noteSearch").value.trim().toLocaleLowerCase("tr-TR"),filter=document.getElementById("noteFilter").value;
-
- const filtered=notes.filter(note=>{
-
-  const matchesCategory=!filter||note.categoryId===filter;
-
-  const searchable=(note.title+" "+note.body+" "+(categories.find(c=>c.id===note.categoryId)?.name||"")).toLocaleLowerCase("tr-TR");
-
-  return matchesCategory&&searchable.includes(query);
-
- });
-
- const list=document.getElementById("noteList");list.innerHTML="";
-
- document.getElementById("notesEmpty").classList.toggle("hidden",filtered.length>0);
-
- filtered.forEach(note=>{
-
-  const category=categories.find(c=>c.id===note.categoryId),card=document.createElement("article");
-
-  card.className="item-card";
-
-  card.innerHTML=`<div class="item-top"><div><h3>${esc(note.title)}</h3><span class="badge">${esc(category?.name||"Kategorisiz")}</span></div></div><p>${esc(note.body)}</p><div class="muted">${note.updatedAt?"Güncellendi":"Oluşturuldu"}: ${esc(formatDate(note.updatedAt||note.createdAt))}</div><div class="item-actions"><button class="btn btn-small btn-light" data-edit-note="${esc(note.id)}">Düzenle</button><button class="btn btn-small btn-danger" data-delete-note="${esc(note.id)}">Sil</button></div>`;
-
-  list.appendChild(card);
-
- });
-
+  const target=document.getElementById("notesList");if(!target)return;
+  if(!data.notes.length){target.innerHTML='<div class="panel empty">Henüz not yok.</div>';return}
+  target.innerHTML=[...data.notes].reverse().map(n=>`
+    <div class="item"><div class="item-main"><h4>${esc(n.title||"Başlıksız not")}</h4>
+    ${n.category?`<span class="pill">${esc(n.category)}</span>`:""}<p>${esc(n.content||"")}</p>
+    ${n.created?`<p>${esc(n.created)}</p>`:""}</div>
+    <div class="item-actions"><button class="btn secondary small" data-edit-note="${esc(n.id)}">Düzenle</button><button class="btn danger small" data-delete-note="${esc(n.id)}">Sil</button></div></div>`).join("");
+  target.querySelectorAll("[data-edit-note]").forEach(b=>b.onclick=()=>editNote(b.dataset.editNote));
+  target.querySelectorAll("[data-delete-note]").forEach(b=>b.onclick=()=>deleteRecord("notes",b.dataset.deleteNote));
 }
 
-document.getElementById("noteList").addEventListener("click",event=>{
+function openModal(title,html){
+  document.getElementById("modalTitle").textContent=title;
+  document.getElementById("modalContent").innerHTML=html;
+  document.getElementById("modalBackdrop").classList.add("open");
+}
+function closeModal(){document.getElementById("modalBackdrop").classList.remove("open")}
+document.getElementById("closeModal").onclick=closeModal;
+document.getElementById("modalBackdrop").addEventListener("click",e=>{if(e.target.id==="modalBackdrop")closeModal()});
 
- const edit=event.target.closest("[data-edit-note]"),del=event.target.closest("[data-delete-note]");
+function val(id){return document.getElementById(id)?.value?.trim()||""}
+function personForm(p={}){
+  const units=data.units.map(u=>`<option value="${esc(u.name)}" ${p.unit===u.name?"selected":""}>${esc(u.name)}</option>`).join("");
+  openModal(p.id?"Kişiyi düzenle":"Yeni kişi",`
+    <form id="personForm">
+      <div class="form-grid">
+        <div class="field"><label>Ad</label><input id="pFirst" autocomplete="given-name" value="${esc(p.firstName)}" placeholder="Ad"></div>
+        <div class="field"><label>Soyad</label><input id="pLast" autocomplete="family-name" value="${esc(p.lastName)}" placeholder="Soyad"></div>
+        <div class="field"><label>Telefon</label><input id="pPhone" type="tel" autocomplete="tel" value="${esc(p.phone)}" placeholder="05xx xxx xx xx"></div>
+        <div class="field"><label>Dahili numara</label><input id="pExt" value="${esc(p.extension)}" placeholder="Dahili"></div>
+        <div class="field"><label>E-posta</label><input id="pEmail" type="email" autocomplete="email" value="${esc(p.email)}" placeholder="ornek@kurum.gov.tr"></div>
+        <div class="field"><label>Birim</label><input id="pUnit" list="unitOptions" value="${esc(p.unit)}" placeholder="Birim adı"><datalist id="unitOptions">${units}</datalist></div>
+        <div class="field"><label>Görev / Ünvan</label><input id="pJob" value="${esc(p.job)}" placeholder="Görevi"></div>
+        <div class="field"><label>Kategori</label><input id="pCategory" value="${esc(p.category)}" placeholder="Örn. Yönetici"></div>
+        <div class="field span-2"><label>Adres / Konum</label><input id="pAddress" value="${esc(p.address)}" placeholder="Adres veya çalışma yeri"></div>
+        <div class="field span-2"><label>Ek bilgiler</label><textarea id="pNotes" placeholder="Kişi hakkında notlar">${esc(p.notes)}</textarea></div>
+      </div>
+      <div class="row"><button type="submit" class="btn">Kaydet</button><button type="button" class="btn secondary" id="cancelPerson">Vazgeç</button></div>
+    </form>`);
+  document.getElementById("cancelPerson").onclick=closeModal;
+  document.getElementById("personForm").onsubmit=e=>{
+    e.preventDefault();
+    const item={
+      id:p.id||uid(),firstName:val("pFirst"),lastName:val("pLast"),phone:val("pPhone"),
+      extension:val("pExt"),email:val("pEmail"),unit:val("pUnit"),job:val("pJob"),
+      category:val("pCategory"),address:val("pAddress"),notes:val("pNotes")
+    };
+    if(!item.firstName&&!item.lastName&&!item.phone){notify("En azından isim veya telefon gir.");return}
+    if(p.id){const i=data.people.findIndex(x=>x.id===p.id);if(i>=0)data.people[i]=item}
+    else data.people.push(item);
+    saveData();closeModal();notify("Kişi kaydedildi.");
+  };
+}
+function editPerson(id){const p=data.people.find(x=>x.id===id);if(p)personForm(p)}
+function deleteRecord(type,id){
+  if(!confirm("Bu kaydı silmek istediğine emin misin?"))return;
+  data[type]=data[type].filter(x=>x.id!==id);saveData();notify("Kayıt silindi.");
+}
 
- if(edit){
+function unitForm(u={}){
+  openModal(u.id?"Birimi düzenle":"Yeni birim",`
+    <form id="unitForm"><div class="field"><label>Birim adı</label><input id="uName" required value="${esc(u.name)}" placeholder="Örn. Muhabere"></div>
+    <div class="field"><label>Açıklama</label><textarea id="uDesc">${esc(u.description)}</textarea></div>
+    <div class="row"><button class="btn" type="submit">Kaydet</button><button class="btn secondary" type="button" id="cancelUnit">Vazgeç</button></div></form>`);
+  document.getElementById("cancelUnit").onclick=closeModal;
+  document.getElementById("unitForm").onsubmit=e=>{
+    e.preventDefault();const name=val("uName");if(!name)return;
+    const item={id:u.id||uid(),name,description:val("uDesc")};
+    if(u.id){const i=data.units.findIndex(x=>x.id===u.id);if(i>=0)data.units[i]=item}else data.units.push(item);
+    saveData();closeModal();notify("Birim kaydedildi.");
+  };
+}
+function editUnit(id){const u=data.units.find(x=>x.id===id);if(u)unitForm(u)}
 
-  const note=notes.find(n=>n.id===edit.dataset.editNote);if(!note)return;
+function taskForm(t={}){
+  openModal(t.id?"İşi düzenle":"Yeni iş",`
+    <form id="taskForm"><div class="field"><label>Görev başlığı</label><input id="tTitle" required value="${esc(t.title)}" placeholder="Yapılacak iş"></div>
+    <div class="form-grid"><div class="field"><label>Durum</label><select id="tStatus"><option ${t.status==="Bekliyor"||!t.status?"selected":""}>Bekliyor</option><option ${t.status==="Devam ediyor"?"selected":""}>Devam ediyor</option><option ${t.status==="Tamamlandı"?"selected":""}>Tamamlandı</option></select></div>
+    <div class="field"><label>Son tarih</label><input id="tDue" type="date" value="${esc(t.due)}"></div></div>
+    <div class="field"><label>Açıklama</label><textarea id="tDesc">${esc(t.description)}</textarea></div>
+    <div class="row"><button class="btn" type="submit">Kaydet</button><button class="btn secondary" type="button" id="cancelTask">Vazgeç</button></div></form>`);
+  document.getElementById("cancelTask").onclick=closeModal;
+  document.getElementById("taskForm").onsubmit=e=>{
+    e.preventDefault();const item={id:t.id||uid(),title:val("tTitle"),status:val("tStatus"),due:val("tDue"),description:val("tDesc")};
+    if(t.id){const i=data.tasks.findIndex(x=>x.id===t.id);if(i>=0)data.tasks[i]=item}else data.tasks.push(item);
+    saveData();closeModal();notify("İş kaydedildi.");
+  };
+}
+function editTask(id){const t=data.tasks.find(x=>x.id===id);if(t)taskForm(t)}
 
-  renderCategoryOptions();
+function noteForm(n={}){
+  openModal(n.id?"Notu düzenle":"Yeni not",`
+    <form id="noteForm"><div class="field"><label>Başlık</label><input id="nTitle" value="${esc(n.title)}" placeholder="Not başlığı"></div>
+    <div class="field"><label>Kategori</label><input id="nCategory" list="noteCategories" value="${esc(n.category)}" placeholder="Örn. Önemli"><datalist id="noteCategories"><option>Önemli</option><option>İş</option><option>Kişisel</option><option>Hatırlatma</option></datalist></div>
+    <div class="field"><label>Not içeriği</label><textarea id="nContent" required>${esc(n.content)}</textarea></div>
+    <div class="row"><button class="btn" type="submit">Kaydet</button><button class="btn secondary" type="button" id="cancelNote">Vazgeç</button></div></form>`);
+  document.getElementById("cancelNote").onclick=closeModal;
+  document.getElementById("noteForm").onsubmit=e=>{
+    e.preventDefault();const item={id:n.id||uid(),title:val("nTitle"),category:val("nCategory"),content:val("nContent"),created:n.created||new Date().toLocaleString("tr-TR")};
+    if(n.id){const i=data.notes.findIndex(x=>x.id===n.id);if(i>=0)data.notes[i]=item}else data.notes.push(item);
+    saveData();closeModal();notify("Not kaydedildi.");
+  };
+}
+function editNote(id){const n=data.notes.find(x=>x.id===id);if(n)noteForm(n)}
 
-  for(const field of ["id","title","categoryId","body"])noteForm.elements[field].value=note[field]??"";
-
-  document.getElementById("noteFormTitle").textContent="Notu Düzenle";
-
-  document.getElementById("noteSave").textContent="Değişiklikleri Kaydet";
-
-  document.getElementById("noteCancel").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});
-
- }
-
- if(del){
-
-  const note=notes.find(n=>n.id===del.dataset.deleteNote);if(!note||!confirm(`"${note.title}" notunu silmek istiyor musun?`))return;
-
-  const old=notes;notes=notes.filter(n=>n.id!==note.id);
-
-  if(!saveArray(KEYS.notes,notes)){notes=old;return}
-
-  renderAll();
-
- }
-
+document.getElementById("addPersonBtn").onclick=()=>personForm();
+document.getElementById("addUnitBtn").onclick=()=>unitForm();
+document.getElementById("addTaskBtn").onclick=()=>taskForm();
+document.getElementById("addNoteBtn").onclick=()=>noteForm();
+document.getElementById("peopleSearch").addEventListener("input",renderPeople);
+document.getElementById("globalSearch").addEventListener("input",()=>{
+  const q=val("globalSearch");
+  if(q){go("people");document.getElementById("peopleSearch").value=q;renderPeople()}
+  else {document.getElementById("peopleSearch").value="";renderPeople()}
 });
 
+function openImportPicker(){document.getElementById("importFile").click()}
+document.getElementById("openImport").onclick=openImportPicker;
+document.getElementById("peopleImportBtn").onclick=openImportPicker;
+document.getElementById("exportCsv").onclick=exportCSV;
+document.getElementById("peopleExportBtn").onclick=exportCSV;
+document.getElementById("settingsExport").onclick=exportCSV;
+document.getElementById("exportVcf").onclick=exportVCard;
 
+document.getElementById("importFile").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  try{
+    const text=await file.text();
+    const lower=file.name.toLowerCase();
+    if(lower.endsWith(".vcf")||text.includes("BEGIN:VCARD")){
+      const imported=parseVCard(text);
+      if(!imported.length){alert("Dosyada okunabilir kişi bulunamadı.");return}
+      if(confirm(imported.length+" kişi bulundu. EREN'e eklensin mi?")){
+        mergePeople(imported);saveData();notify(imported.length+" kişi içe aktarıldı.");
+      }
+    }else{
+      const imported=parseCSV(text);
+      if(!imported.length){alert("CSV dosyasında okunabilir kişi bulunamadı. İlk satırda Ad, Soyad, Telefon gibi sütun adları olmalı.");return}
+      if(confirm(imported.length+" kişi bulundu. EREN'e eklensin mi?")){
+        mergePeople(imported);saveData();notify(imported.length+" kişi içe aktarıldı.");
+      }
+    }
+  }catch(err){alert("Dosya okunamadı. CSV veya VCF dosyası seçtiğinden emin ol.")}
+  e.target.value="";
+});
 
-/* Ana sayfa */
-
-function renderHome(){
-
- document.getElementById("statPeople").textContent=people.length;
-
- document.getElementById("statCategories").textContent=categories.length;
-
- document.getElementById("statNotes").textContent=notes.length;
-
- const container=document.getElementById("recentPeople");container.innerHTML="";
-
- if(!people.length){container.innerHTML='<div class="empty">Henüz kişi kaydı yok. Kişi Ekle bölümünden başlayabilirsin.</div>';return}
-
- people.slice(0,5).forEach(person=>{
-
-  const card=document.createElement("div");card.className="item-card";
-
-  card.innerHTML=`<div class="item-top"><div><h3><button class="click-name" data-home-profile="${esc(person.id)}">${esc(person.name)}</button></h3><div class="muted">${esc(person.unit||"")} · ${esc(person.job||"")}</div></div><span class="badge">${esc(person.category||"Diğer")}</span></div><div class="muted">Telefon: ${esc(person.phone||"-")} · Dahili: ${esc(person.extension||"-")}</div>`;
-
-  container.appendChild(card);
-
- });
-
-}
-
-document.getElementById("recentPeople").addEventListener("click",event=>{const btn=event.target.closest("[data-home-profile]");if(btn)showProfile(btn.dataset.homeProfile)});
-
-
-/* Birimler, iş kayıtları ve birleşik arama */
-function saveUnits(){return saveArray(KEYS.units,units)}
-function saveTasks(){return saveArray(KEYS.tasks,tasks)}
-function renderUnitOptions(){
- const names=[...new Set([...units.map(u=>u.name),...people.map(p=>p.unit).filter(Boolean),...tasks.map(t=>t.unit).filter(Boolean)].map(x=>String(x).trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"tr"));
- const datalist=document.getElementById("unitOptions");if(datalist)datalist.innerHTML=names.map(n=>`<option value="${esc(n)}"></option>`).join("");
-}
-function renderUnitList(){
- const box=document.getElementById("unitList"),empty=document.getElementById("unitsEmpty");if(!box)return;box.innerHTML="";empty.classList.toggle("hidden",units.length>0);
- units.slice().sort((a,b)=>a.name.localeCompare(b.name,"tr")).forEach(unit=>{
-  const members=people.filter(p=>(p.unit||"").trim().toLocaleLowerCase("tr-TR")===unit.name.trim().toLocaleLowerCase("tr-TR"));
-  const card=document.createElement("div");card.className="item-card";card.innerHTML=`<div class="item-top"><div><h3>${esc(unit.name)}</h3><div class="muted">Üst birim: ${esc(unit.parent||"Belirtilmedi")} · Kişi sayısı: ${members.length}</div></div><span class="badge">Birim</span></div>${unit.description?`<p>${esc(unit.description)}</p>`:""}<div class="item-actions"><button class="btn btn-light btn-small" data-unit-edit="${esc(unit.id)}">Düzenle</button><button class="btn btn-light btn-small" data-unit-people="${esc(unit.id)}">Bu birimdeki kişiler</button><button class="btn btn-danger btn-small" data-unit-delete="${esc(unit.id)}">Sil</button></div>`;box.appendChild(card);
- });
-}
-function resetUnitForm(){const f=document.getElementById("unitForm");f.reset();f.elements.id.value="";document.getElementById("unitSave").textContent="Birimi Kaydet";document.getElementById("unitCancel").classList.add("hidden")}
-document.getElementById("unitForm").addEventListener("submit",e=>{e.preventDefault();const f=e.currentTarget,id=f.elements.id.value,name=f.elements.name.value.trim();if(!name)return;const duplicate=units.some(u=>u.name.toLocaleLowerCase("tr-TR")===name.toLocaleLowerCase("tr-TR")&&u.id!==id);if(duplicate){alert("Bu isimde bir birim zaten kayıtlı.");return}const item={id:id||makeId(),name,parent:f.elements.parent.value.trim(),description:f.elements.description.value.trim(),updatedAt:new Date().toISOString()};const old=units;if(id)units=units.map(u=>u.id===id?item:u);else units.unshift(item);if(!saveUnits()){units=old;return}resetUnitForm();renderAll()});
-document.getElementById("unitCancel").addEventListener("click",resetUnitForm);
-document.getElementById("unitList").addEventListener("click",e=>{const edit=e.target.closest("[data-unit-edit]"),del=e.target.closest("[data-unit-delete]"),show=e.target.closest("[data-unit-people]");if(edit){const u=units.find(x=>x.id===edit.dataset.unitEdit);if(!u)return;const f=document.getElementById("unitForm");f.elements.id.value=u.id;f.elements.name.value=u.name;f.elements.parent.value=u.parent||"";f.elements.description.value=u.description||"";document.getElementById("unitSave").textContent="Değişiklikleri Kaydet";document.getElementById("unitCancel").classList.remove("hidden");f.scrollIntoView({behavior:"smooth",block:"start"})}else if(del){const u=units.find(x=>x.id===del.dataset.unitDelete);if(!u||!confirm(`“${u.name}” birimi silinsin mi? Kişi kayıtlarındaki birim alanları değişmez.`))return;const old=units;units=units.filter(x=>x.id!==u.id);if(!saveUnits()){units=old;return}renderAll()}else if(show){const u=units.find(x=>x.id===show.dataset.unitPeople);if(!u)return;go("people");document.getElementById("peopleSearch").value=u.name;renderPeople()}});
-function renderTaskPersonOptions(){const select=document.getElementById("taskPerson"),old=select.value;select.innerHTML='<option value="">Kişi seç (isteğe bağlı)</option>'+people.slice().sort((a,b)=>a.name.localeCompare(b.name,"tr")).map(p=>`<option value="${esc(p.id)}">${esc(p.name)}${p.unit?" — "+esc(p.unit):""}</option>`).join("");if(people.some(p=>p.id===old))select.value=old}
-function resetTaskForm(){const f=document.getElementById("taskForm");f.reset();f.elements.id.value="";document.getElementById("taskFormTitle").textContent="Yeni İş Kaydı";document.getElementById("taskSave").textContent="İşi Kaydet";document.getElementById("taskCancel").classList.add("hidden")}
-document.getElementById("taskForm").addEventListener("submit",e=>{e.preventDefault();const f=e.currentTarget,id=f.elements.id.value;const item={id:id||makeId(),title:f.elements.title.value.trim(),personId:f.elements.personId.value,unit:f.elements.unit.value.trim(),priority:f.elements.priority.value,status:f.elements.status.value,dueDate:f.elements.dueDate.value,details:f.elements.details.value.trim(),updatedAt:new Date().toISOString(),createdAt:(tasks.find(t=>t.id===id)||{}).createdAt||new Date().toISOString()};if(!item.title)return;const old=tasks;if(id)tasks=tasks.map(t=>t.id===id?item:t);else tasks.unshift(item);if(!saveTasks()){tasks=old;return}resetTaskForm();renderAll()});
-document.getElementById("taskCancel").addEventListener("click",resetTaskForm);
-function renderTasks(){const box=document.getElementById("taskList"),empty=document.getElementById("tasksEmpty");if(!box)return;const q=document.getElementById("taskSearch").value.trim().toLocaleLowerCase("tr-TR"),status=document.getElementById("taskStatusFilter").value;const filtered=tasks.filter(t=>{const p=people.find(x=>x.id===t.personId);const hay=[t.title,t.unit,t.priority,t.status,t.details,t.dueDate,p?.name,p?.job,p?.unit].join(" ").toLocaleLowerCase("tr-TR");return(!q||hay.includes(q))&&(!status||t.status===status)});box.innerHTML="";empty.classList.toggle("hidden",filtered.length>0);filtered.sort((a,b)=>(a.dueDate||"9999").localeCompare(b.dueDate||"9999")).forEach(t=>{const p=people.find(x=>x.id===t.personId),card=document.createElement("div");card.className="item-card";card.innerHTML=`<div class="item-top"><div><h3>${esc(t.title)}</h3><div class="muted">Sorumlu: ${p?`<button class="click-name" data-task-profile="${esc(p.id)}">${esc(p.name)}</button>`:"Atanmadı"} · Birim: ${esc(t.unit||p?.unit||"Belirtilmedi")}</div><div class="muted">Son tarih: ${esc(t.dueDate||"Belirtilmedi")} · Öncelik: ${esc(t.priority||"Normal")}</div></div><span class="badge">${esc(t.status||"Başlanmadı")}</span></div>${t.details?`<p>${esc(t.details)}</p>`:""}<div class="item-actions"><button class="btn btn-light btn-small" data-task-edit="${esc(t.id)}">Düzenle</button><button class="btn btn-danger btn-small" data-task-delete="${esc(t.id)}">Sil</button></div>`;box.appendChild(card)})}
-document.getElementById("taskSearch").addEventListener("input",renderTasks);document.getElementById("taskStatusFilter").addEventListener("change",renderTasks);
-document.getElementById("taskList").addEventListener("click",e=>{const edit=e.target.closest("[data-task-edit]"),del=e.target.closest("[data-task-delete]"),profile=e.target.closest("[data-task-profile]");if(profile){showProfile(profile.dataset.taskProfile);return}if(edit){const t=tasks.find(x=>x.id===edit.dataset.taskEdit);if(!t)return;const f=document.getElementById("taskForm");for(const k of ["id","title","personId","unit","priority","status","dueDate","details"])f.elements[k].value=t[k]||"";document.getElementById("taskFormTitle").textContent="İşi Düzenle";document.getElementById("taskSave").textContent="Değişiklikleri Kaydet";document.getElementById("taskCancel").classList.remove("hidden");f.scrollIntoView({behavior:"smooth",block:"start"})}else if(del){const t=tasks.find(x=>x.id===del.dataset.taskDelete);if(!t||!confirm(`“${t.title}” işi silinsin mi?`))return;const old=tasks;tasks=tasks.filter(x=>x.id!==t.id);if(!saveTasks()){tasks=old;return}renderAll()}});
-function renderSmartSearch(){const input=document.getElementById("smartSearchInput"),box=document.getElementById("smartSearchResults");if(!input||!box)return;const q=input.value.trim().toLocaleLowerCase("tr-TR");if(!q){box.innerHTML='<div class="empty">Aramak için yukarıya bir kelime yaz.</div>';return}const results=[];people.forEach(p=>{const text=[p.name,p.unit,p.job,p.workplace,p.roomFloor,p.extension,p.phone,p.email,p.category,p.expertise,p.responsibilities,p.notes,p.additionalInfo].join(" ").toLocaleLowerCase("tr-TR");if(text.includes(q))results.push({type:"person",id:p.id,title:p.name,sub:[p.unit,p.job,p.extension?"Dahili: "+p.extension:"",p.phone?"Telefon: "+p.phone:""].filter(Boolean).join(" · "),body:[p.expertise,p.responsibilities,p.notes].filter(Boolean).join(" — ")} )});tasks.forEach(t=>{const p=people.find(x=>x.id===t.personId);const text=[t.title,t.unit,t.priority,t.status,t.details,p?.name,p?.job,p?.unit].join(" ").toLocaleLowerCase("tr-TR");if(text.includes(q))results.push({type:"task",id:t.id,title:t.title,sub:[p?"Sorumlu: "+p.name:"Sorumlu atanmadı",t.unit||p?.unit||"",t.status||"Başlanmadı",t.dueDate?"Son tarih: "+t.dueDate:""].filter(Boolean).join(" · "),body:t.details||""})});units.forEach(u=>{if([u.name,u.parent,u.description].join(" ").toLocaleLowerCase("tr-TR").includes(q))results.push({type:"unit",id:u.id,title:u.name,sub:"Birim · "+people.filter(p=>(p.unit||"").toLocaleLowerCase("tr-TR")===u.name.toLocaleLowerCase("tr-TR")).length+" kişi",body:u.description||""})});box.innerHTML="";if(!results.length){box.innerHTML='<div class="empty">Eşleşme bulunamadı. Başka bir kelime dene.</div>';return}results.slice(0,100).forEach(r=>{const card=document.createElement("div");card.className="item-card";card.innerHTML=`<div class="item-top"><div><h3>${esc(r.title)}</h3><div class="muted">${esc(r.sub)}</div></div><span class="badge">${r.type==="person"?"Kişi":r.type==="task"?"İş":"Birim"}</span></div>${r.body?`<p>${esc(r.body)}</p>`:""}<div class="item-actions"><button class="btn btn-light btn-small" data-smart-type="${r.type}" data-smart-id="${esc(r.id)}">Aç</button></div>`;box.appendChild(card)})}
-document.getElementById("smartSearchInput").addEventListener("input",renderSmartSearch);document.getElementById("smartSearchResults").addEventListener("click",e=>{const b=e.target.closest("[data-smart-type]");if(!b)return;if(b.dataset.smartType==="person")showProfile(b.dataset.smartId);else if(b.dataset.smartType==="task"){go("tasks");document.getElementById("taskSearch").value=tasks.find(t=>t.id===b.dataset.smartId)?.title||"";renderTasks()}else{const u=units.find(x=>x.id===b.dataset.smartId);go("units");if(u){document.getElementById("unitForm").elements.name.value=u.name;document.getElementById("unitForm").elements.parent.value=u.parent||"";document.getElementById("unitForm").elements.description.value=u.description||"";document.getElementById("unitForm").elements.id.value=u.id;document.getElementById("unitSave").textContent="Değişiklikleri Kaydet";document.getElementById("unitCancel").classList.remove("hidden")}}});
-
-function renderAll(){renderPersonCategories();renderCategoryOptions();renderPeople();renderCategories();renderNotes();renderHome();renderUnitOptions();renderUnitList();renderTaskPersonOptions();renderTasks();renderSmartSearch()}
-
-renderAll();
-
-</script>
-
-
-<script>
-// EREN'i HTTPS üzerinden açıldığında çevrimdışı kullanım için kaydet.
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./sw.js").catch(function (error) {
-      console.error("EREN çevrimdışı desteği kaydedilemedi:", error);
-    });
+function mergePeople(imported){
+  imported.forEach(p=>{
+    const phone=(p.phone||"").replace(/\s/g,"");
+    const name=(p.firstName+" "+p.lastName).trim().toLocaleLowerCase("tr");
+    const exists=data.people.some(x=>
+      (phone&&String(x.phone||"").replace(/\s/g,"")===phone)||
+      (name&&name===(String(x.firstName||"")+" "+String(x.lastName||"")).trim().toLocaleLowerCase("tr"))
+    );
+    if(!exists)data.people.push({...p,id:uid()});
   });
 }
+
+function normalizeHeader(s){
+  return String(s||"").replace(/^\ufeff/,"").trim().toLocaleLowerCase("tr")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/ı/g,"i").replace(/[^a-z0-9]/g,"");
+}
+function parseCSV(text){
+  const firstLine=(text.split(/\r?\n/).find(x=>x.trim())||"");
+  const semicolon=(firstLine.match(/;/g)||[]).length;
+  const comma=(firstLine.match(/,/g)||[]).length;
+  const tab=(firstLine.match(/\t/g)||[]).length;
+  const delimiter=tab>semicolon&&tab>comma?"\t":semicolon>=comma?";":",";
+  const rows=[];let row=[],field="",quoted=false;
+  text=text.replace(/^\ufeff/,"");
+  for(let i=0;i<text.length;i++){
+    const c=text[i],next=text[i+1];
+    if(c==='"'&&quoted&&next==='"'){field+='"';i++}
+    else if(c==='"'){quoted=!quoted}
+    else if(c===delimiter&&!quoted){row.push(field);field=""}
+    else if((c==="\n"||c==="\r")&&!quoted){
+      if(c==="\r"&&next==="\n")i++;
+      row.push(field);if(row.some(v=>String(v).trim()))rows.push(row);
+      row=[];field="";
+    }else field+=c;
+  }
+  row.push(field);if(row.some(v=>String(v).trim()))rows.push(row);
+  if(rows.length<2)return [];
+  const headers=rows[0].map(normalizeHeader);
+  const aliases={
+    firstName:["ad","isim","firstname","givenname","adi","first"],
+    lastName:["soyad","soyisim","lastname","surname","familyname","soyadi","last"],
+    phone:["telefon","telefonno","telefonnumarasi","tel","phone","mobile","cep","ceptel","gsm"],
+    extension:["dahili","dahilinumarasi","dahiliis","extension","internalphone"],
+    email:["eposta","email","mail","epostasi"],
+    unit:["birim","calistigibirimi","calistigibirim","unit","department","departman"],
+    job:["gorev","unvan","gorevi","title","job","position"],
+    category:["kategori","category","grup","group"],
+    address:["adres","konum","address","location"],
+    notes:["not","notlar","aciklama","notes","description"]
+  };
+  const indices={};
+  for(const key in aliases)indices[key]=headers.findIndex(h=>aliases[key].includes(h));
+  const get=(r,k)=>indices[k]>=0?String(r[indices[k]]||"").trim():"";
+  return rows.slice(1).map(r=>({
+    id:uid(),firstName:get(r,"firstName"),lastName:get(r,"lastName"),phone:get(r,"phone"),
+    extension:get(r,"extension"),email:get(r,"email"),unit:get(r,"unit"),job:get(r,"job"),
+    category:get(r,"category"),address:get(r,"address"),notes:get(r,"notes")
+  })).filter(p=>p.firstName||p.lastName||p.phone);
+}
+
+function unescapeV(s){
+  return String(s||"").replace(/\\n/gi,"\n").replace(/\\,/g,",").replace(/\\;/g,";").replace(/\\\\/g,"\\");
+}
+function parseVCard(text){
+  const unfolded=text.replace(/\r?\n[ \t]/g,"");
+  const blocks=unfolded.split(/END:VCARD/i);
+  const people=[];
+  blocks.forEach(block=>{
+    if(!/BEGIN:VCARD/i.test(block))return;
+    const p={id:uid(),firstName:"",lastName:"",phone:"",extension:"",email:"",unit:"",job:"",category:"",address:"",notes:""};
+    block.split(/\r?\n/).forEach(line=>{
+      const colon=line.indexOf(":");if(colon<0)return;
+      const key=line.slice(0,colon).split(";")[0].toUpperCase();
+      const value=unescapeV(line.slice(colon+1).trim());
+      if(key==="FN"&&!p.firstName&&!p.lastName){const parts=value.trim().split(/\s+/);p.firstName=parts.shift()||"";p.lastName=parts.join(" ")}
+      if(key==="N"){
+        const parts=value.split(";");p.lastName=unescapeV(parts[0]||"");p.firstName=unescapeV(parts[1]||"");
+      }
+      if(key==="TEL"&&!p.phone)p.phone=value;
+      if(key==="EMAIL"&&!p.email)p.email=value;
+      if(key==="ORG"&&!p.unit)p.unit=value.replace(/;/g," ");
+      if(key==="TITLE"&&!p.job)p.job=value;
+      if(key==="ADR"&&!p.address)p.address=value.split(";").filter(Boolean).join(", ");
+      if(key==="NOTE"&&!p.notes)p.notes=value;
+    });
+    if(p.firstName||p.lastName||p.phone)people.push(p);
+  });
+  return people;
+}
+
+document.getElementById("backupBtn").onclick=backup;
+document.getElementById("settingsBackup").onclick=backup;
+function backup(){
+  downloadFile("EREN_Yedek_"+new Date().toISOString().slice(0,10)+".json",JSON.stringify({version:1,exportedAt:new Date().toISOString(),...data},null,2),"application/json;charset=utf-8");
+  notify("Yedek dosyası oluşturuldu.");
+}
+document.getElementById("restoreFile").addEventListener("change",async e=>{
+  const file=e.target.files&&e.target.files[0];if(!file)return;
+  try{
+    const obj=JSON.parse(await file.text());
+    if(!obj||!Array.isArray(obj.people)||!Array.isArray(obj.units)||!Array.isArray(obj.tasks)||!Array.isArray(obj.notes)){
+      alert("Bu dosya geçerli bir EREN yedeği değil.");return;
+    }
+    if(confirm("Mevcut EREN kayıtları yedekteki kayıtlarla değiştirilsin mi? Önce mevcut verileri yedeklemen önerilir.")){
+      data={people:obj.people,units:obj.units,tasks:obj.tasks,notes:obj.notes};
+      saveData();notify("Yedek geri yüklendi.");
+    }
+  }catch(err){alert("Yedek dosyası okunamadı.")}
+  e.target.value="";
+});
+document.getElementById("clearDataBtn").onclick=()=>{
+  if(confirm("TÜM kişi, birim, görev ve not kayıtları kalıcı olarak silinsin mi?")){
+    if(confirm("Son kez soruyorum: Devam etmek istiyor musun?")){
+      data=emptyData();saveData();notify("EREN kayıtları silindi.");
+    }
+  }
+};
+
+function setTheme(dark){
+  document.body.classList.toggle("dark",dark);
+  document.getElementById("themeBtn").textContent=dark?"☀":"☾";
+  try{localStorage.setItem(THEME_KEY,dark?"dark":"light")}catch(e){}
+}
+document.getElementById("themeBtn").onclick=()=>setTheme(!document.body.classList.contains("dark"));
+try{setTheme(localStorage.getItem(THEME_KEY)==="dark")}catch(e){}
+
+renderAll();
+setTimeout(()=>document.getElementById("splash").classList.add("hide"),1550);
+
+})();
 </script>
-
 </body>
-
 </html>
