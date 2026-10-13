@@ -1,0 +1,44 @@
+
+name: EREN iOS IPA Oluştur
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Projeyi indir
+        uses: actions/checkout@v4
+
+      - name: Node.js kur
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Bağımlılıkları yükle
+        run: npm install
+
+      - name: iOS projesini hazırla
+        run: |
+          npx cap add ios
+          npx cap sync ios
+
+      - name: İmzasız iOS uygulamasını derle
+        run: |
+          cd ios/App
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -derivedDataPath build CODE_SIGNING_ALLOWED=NO
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -r "$GITHUB_WORKSPACE/EREN-unsigned.ipa" Payload
+
+      - name: IPA dosyasını sakla
+        uses: actions/upload-artifact@v4
+        with:
+          name: EREN-unsigned-IPA
+          path: EREN-unsigned.ipa
+          retention-days: 7
