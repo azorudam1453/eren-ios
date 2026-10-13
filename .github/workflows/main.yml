@@ -1,3 +1,4 @@
+```yaml
 name: EREN GitHub Pages Yayını
 
 on:
@@ -21,6 +22,7 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Depoyu indir
         uses: actions/checkout@v4
@@ -28,11 +30,24 @@ jobs:
       - name: GitHub Pages ayarlarını yap
         uses: actions/configure-pages@v5
 
-      - name: www klasörünü yayın için hazırla
+      - name: Web dosyalarını hazırla
+        shell: bash
         run: |
-          test -f www/index.html
+          if [ -f "EREN-iOS-Projesi/www/index.html" ]; then
+            SOURCE_DIR="EREN-iOS-Projesi/www"
+          elif [ -f "www/index.html" ]; then
+            SOURCE_DIR="www"
+          else
+            echo "HATA: index.html bulunamadı."
+            find . -maxdepth 5 -name index.html
+            exit 1
+          fi
+
           mkdir -p _site
-          cp -R www/. _site/
+          cp -R "$SOURCE_DIR"/. _site/
+
+          test -f _site/index.html
+          echo "EREN web dosyaları hazır."
 
       - name: Yayın dosyalarını yükle
         uses: actions/upload-pages-artifact@v3
@@ -42,3 +57,4 @@ jobs:
       - name: GitHub Pages'e yayınla
         id: deployment
         uses: actions/deploy-pages@v4
+```
