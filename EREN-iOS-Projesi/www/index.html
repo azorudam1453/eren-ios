@@ -10,6 +10,10 @@
 <meta name="apple-mobile-web-app-title" content="EREN">
 <title>EREN | Kişi Bilgi Sistemi</title>
 
+<!-- iPhone ana ekranı ve PWA bağlantıları -->
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./eren-icon.svg">
+
 <style>
 :root {
   --bg:#f3f6fb; --card:#fff; --text:#17243a; --muted:#75839a;
@@ -403,7 +407,6 @@ function exportCSV(){
 
 function exportVCard(){
   if(!data.people.length){notify("Dışa aktarılacak kişi yok.");return}
-  const lines=["BEGIN:VCARD","VERSION:3.0"];
   const blocks=data.people.map(p=>{
     const n=[p.lastName||"",p.firstName||""].join(";");
     const parts=["BEGIN:VCARD","VERSION:3.0","N:"+vEscape(n),"FN:"+vEscape((p.firstName+" "+p.lastName).trim())];
@@ -781,6 +784,16 @@ renderAll();
 setTimeout(()=>document.getElementById("splash").classList.add("hide"),1550);
 
 })();
+
+/* EREN çevrimdışı çalışma desteği */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .catch((err) => {
+        console.error("EREN çevrimdışı desteği kaydedilemedi:", err);
+      });
+  });
+}
 </script>
 </body>
 </html>
