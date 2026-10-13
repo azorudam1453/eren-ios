@@ -1,4 +1,4 @@
-
+```yaml
 name: EREN iOS IPA Oluştur
 
 on:
@@ -23,12 +23,33 @@ jobs:
       - name: Proje klasörünü bul
         shell: bash
         run: |
-          if [ -f "EREN-iOS-Projesi/package.json" ]; then
+          if [ -f "EREN-iOS-Projesi/www/index.html" ]; then
             echo "PROJECT_DIR=EREN-iOS-Projesi" >> "$GITHUB_ENV"
-          elif [ -f "package.json" ]; then
+          elif [ -f "www/index.html" ]; then
             echo "PROJECT_DIR=." >> "$GITHUB_ENV"
           else
+            echo "HATA: www/index.html bulunamadı."
+            echo "Depodaki dosyalar:"
+            find . -maxdepth 4 -type f | head -200
+            exit 1
+          fi
+
+      - name: Proje dosyalarını kontrol et
+        working-directory: ${{ github.workspace }}/${{ env.PROJECT_DIR }}
+        shell: bash
+        run: |
+          test -f www/index.html
+          echo "index.html bulundu."
+
+          if [ ! -f package.json ]; then
             echo "HATA: package.json bulunamadı."
+            exit 1
+          fi
+
+          if [ ! -f capacitor.config.json ] && \
+             [ ! -f capacitor.config.ts ] && \
+             [ ! -f capacitor.config.js ]; then
+            echo "HATA: Capacitor yapılandırma dosyası bulunamadı."
             exit 1
           fi
 
@@ -43,6 +64,7 @@ jobs:
           if [ ! -d "ios/App" ]; then
             npx cap add ios
           fi
+
           npx cap sync ios
 
       - name: CocoaPods bağımlılıklarını yükle
@@ -51,6 +73,7 @@ jobs:
 
       - name: Workspace dosyasını kontrol et
         working-directory: ${{ github.workspace }}/${{ env.PROJECT_DIR }}/ios/App
+        shell: bash
         run: |
           if [ ! -d "App.xcworkspace" ]; then
             echo "HATA: App.xcworkspace bulunamadı."
@@ -94,4 +117,4 @@ jobs:
           name: EREN-unsigned-IPA
           path: EREN-unsigned.ipa
           if-no-files-found: error
-
+```
