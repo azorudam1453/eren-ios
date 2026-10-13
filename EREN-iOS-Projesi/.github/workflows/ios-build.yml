@@ -1,3 +1,4 @@
+```yaml
 name: EREN iOS IPA Oluştur
 
 on:
@@ -10,29 +11,54 @@ jobs:
   build:
     runs-on: macos-15
 
-    defaults:
-      run:
-        working-directory: EREN-iOS-Projesi
-
     steps:
       - name: Depoyu indir
         uses: actions/checkout@v4
+
+      - name: Proje klasörünü bul
+        shell: bash
+        run: |
+          echo "Depodaki dosyalar:"
+          ls -la
+          echo "Proje klasörü:"
+          find . -maxdepth 4 -name package.json -print
 
       - name: Node.js kur
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
+      - name: Proje klasörünü belirle
+        shell: bash
+        run: |
+          if [ -f "EREN-iOS-Projesi/package.json" ]; then
+            echo "PROJECT_DIR=EREN-iOS-Projesi" >> "$GITHUB_ENV"
+          elif [ -f "package.json" ]; then
+            echo "PROJECT_DIR=." >> "$GITHUB_ENV"
+          else
+            echo "HATA: package.json bulunamadı."
+            exit 1
+          fi
+
       - name: Bağımlılıkları yükle
         run: npm install
+        working-directory: ${{ env.PROJECT_DIR }}
 
-      - name: iOS projesini oluştur
-        run: npx cap add ios
+      - name: iOS projesini kontrol et ve oluştur
+        shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          if [ ! -f "ios/App/App.xcodeproj/project.pbxproj" ]; then
+            npx cap add ios
+          fi
 
       - name: Capacitor eşitle
         run: npx cap sync ios
+        working-directory: ${{ env.PROJECT_DIR }}
 
       - name: Uygulamayı derle
+        shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           xcodebuild \
             -project ios/App/App.xcodeproj \
@@ -43,6 +69,8 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: IPA dosyasını hazırla
+        shell: bash
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           mkdir -p Payload
           cp -R build/Build/Products/Release-iphoneos/App.app Payload/EREN.app
@@ -52,5 +80,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: EREN-unsigned-IPA
-          path: EREN-iOS-Projesi/EREN-unsigned.ipa
+          path: ${{ env.PROJECT_DIR }}/EREN-unsigned.ipa
           if-no-files-found: error
+```
