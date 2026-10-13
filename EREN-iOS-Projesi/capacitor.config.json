@@ -1,0 +1,10 @@
+{
+  "appId": "tr.eren.kisibilgisistemi",
+  "appName": "EREN",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "automatic",
+    "backgroundColor": "#102544",
+    "preferredContentMode": "mobile"
+  }
+}

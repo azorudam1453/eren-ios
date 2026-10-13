@@ -1,0 +1,10 @@
+{
+  "name": "EREN",
+  "short_name": "EREN",
+  "description": "Kişi Bilgi Sistemi",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#102544",
+  "theme_color": "#102544",
+  "lang": "tr"
+}

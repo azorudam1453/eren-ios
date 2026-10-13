@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1170 2532">
+<defs><linearGradient id="g" x1="0" y1="0" x2="0.9" y2="1"><stop stop-color="#163963"/><stop offset="1" stop-color="#08162a"/></linearGradient></defs>
+<rect width="1170" height="2532" fill="url(#g)"/>
+<circle cx="585" cy="920" r="132" fill="#fff" opacity=".97"/>
+<path d="M355 1300c24-165 118-245 230-245s206 80 230 245" fill="none" stroke="#fff" stroke-width="78" stroke-linecap="round"/>
+<text x="585" y="1530" font-family="Arial,sans-serif" font-size="122" font-weight="800" text-anchor="middle" fill="#fff" letter-spacing="18">EREN</text>
+<path d="M365 1600h440" stroke="#58a6ff" stroke-width="12" stroke-linecap="round"/>
+<text x="585" y="1690" font-family="Arial,sans-serif" font-size="32" text-anchor="middle" fill="#e3edff">KİŞİ BİLGİ SİSTEMİ</text>
+<text x="585" y="2280" font-family="Arial,sans-serif" font-size="29" text-anchor="middle" fill="#d6e3f8">GELİŞTİRİCİ</text>
+<text x="585" y="2335" font-family="Arial,sans-serif" font-size="34" font-weight="700" text-anchor="middle" fill="#fff">EYYÜPHAN TURHAN MUHABERE</text>
+</svg>
